@@ -30,13 +30,9 @@ parseStatement (gene, dna) = case gene of
   Rank value -> Just $ (Result value, dna)
   _          -> Nothing
 
--- There must be a better way to do this?
-fstMaybe :: (a, b) -> Maybe a
-fstMaybe (a, b) = Just a
-
 parse :: DNA -> Maybe ParseTree
 parse dna = do
   dna'   <- findGeneType dna isStatement
   result <- parseStatement dna'
-  fstMaybe result
+  Just $ fst result
 
