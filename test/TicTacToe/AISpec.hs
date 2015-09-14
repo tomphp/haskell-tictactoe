@@ -14,7 +14,6 @@ spec = do
         parse [CellIsEmpty 1] `shouldBe` Nothing
 
       it "returns nothing if the top level if is incomplete" $ do
-        pending
         parse [IfAnd, CellIsEmpty 1] `shouldBe` Nothing
 
       context "Rank" $ do
