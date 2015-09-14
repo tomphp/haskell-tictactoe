@@ -1,11 +1,12 @@
 module TicTacToe.GameLogic where
 
+import Data.List (nub)
 import TicTacToe.Board
 import TicTacToe.Player
 
 data GameState = InPlay | Draw | Winner Player deriving (Eq, Show)
 
-type IndexLine = [Int]
+type IndexLine = [CellIndex]
 type CellLine  = [Cell]
 
 gameLines :: [IndexLine]
@@ -17,10 +18,10 @@ cellLine :: Board -> IndexLine -> CellLine
 cellLine board indexes = map (board!!) indexes
 
 getWinner :: CellLine -> Maybe Player
-getWinner line = case line of
-  [Cross, Cross, Cross]    -> Just Crosses
-  [Naught, Naught, Naught] -> Just Naughts
-  _                        -> Nothing
+getWinner line = case nub line of
+  [Cross]  -> Just Crosses
+  [Naught] -> Just Naughts
+  _        -> Nothing
 
 lineResults board = map (getWinner . (cellLine board)) gameLines
 
