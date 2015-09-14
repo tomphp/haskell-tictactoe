@@ -1,10 +1,10 @@
 module TicTacToe.AISpec where
 
-import System.Random
-import Data.List (nub)
 import Test.Hspec
 import TicTacToe.AI
 import TicTacToe.Board
+import TicTacToe.AI.DNA
+import TicTacToe.AI.ParseTree
 
 spec :: Spec
 spec = do
