@@ -19,8 +19,8 @@ isCondition gene = case gene of
   CellIsTheirs _   -> True
   _                -> False
 
-isResult :: Gene -> Bool
-isResult gene = case gene of
+isStatement :: Gene -> Bool
+isStatement gene = case gene of
   IfAnd  -> True
   IfOr   -> True
   Rank _ -> True
