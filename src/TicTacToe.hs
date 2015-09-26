@@ -3,13 +3,8 @@ import TicTacToe.Board
 import TicTacToe.Player
 import TicTacToe.GameLogic
 
-switchPlayer :: Player -> Player
-switchPlayer player = case player of
-    Naughts -> Crosses
-    Crosses -> Naughts
-
-play :: Board -> Player -> Int -> Board
-play board player position = case player of
+play :: Move -> Board
+play (board, player, position) = case player of
     Naughts -> setCell board Naught position
     Crosses -> setCell board Cross position
 
@@ -47,14 +42,14 @@ evaluateState board player = case state of
   where state = getGameState board
 
 gameLoop :: Board -> Player -> IO ()
-gameLoop state player = do
-    drawBoard state
+gameLoop board player = do
+    drawBoard board
     putStr $ case player of
         Naughts -> "Naughts, "
         Crosses -> "Crosses, "
     putStr "choose cell: "
     position <- getLine
-    evaluateState (play state player $ (read position) - 1)  player 
+    evaluateState (play (board, player, pred $ read position))  player 
 
 main :: IO ()
 main = do

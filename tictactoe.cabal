@@ -15,6 +15,12 @@ library
       src
   exposed-modules:
     TicTacToe.Board
+    TicTacToe.AI.DNA
+    TicTacToe.AI.Executor
+    TicTacToe.AI.ParseTree
+    TicTacToe.AI
+    TicTacToe.GameLogic
+    TicTacToe.Player
   build-depends:
       base    == 4.*
 
