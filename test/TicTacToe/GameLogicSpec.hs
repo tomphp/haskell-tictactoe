@@ -34,13 +34,13 @@ spec = do
 
     context "getWinner" $ do
       it "is no winner if all cells are empty" $ do
-        (getWinner $ replicate 3 Empty) `shouldBe` Nothing
+        getWinner (replicate 3 Empty) `shouldBe` Nothing
 
       it "gives crosses as the winner if line contains all crosses" $ do
-        (getWinner $ replicate 3 Cross) `shouldBe` Just Crosses
+        getWinner (replicate 3 Cross) `shouldBe` Just Crosses
 
       it "gives naughts as the winner if line contains all naughts" $ do
-        (getWinner $ replicate 3 Naught) `shouldBe` Just Naughts
+        getWinner (replicate 3 Naught) `shouldBe` Just Naughts
 
       it "is no winner if all cells are not all the same" $ do
         getWinner [Naught, Cross, Cross] `shouldBe` Nothing

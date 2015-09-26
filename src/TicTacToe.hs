@@ -24,7 +24,7 @@ drawBoard board = do
     putStrLn "---------"
     putStrLn $ formatRow $ drop 6 parsedBoard
     putStrLn ""
-    where parsedBoard = map cellToChar $ zip board [1..9]
+    where parsedBoard = zipWith (curry cellToChar) board [1..9]
           formatRow row = intersperse ' ' $ intersperse '|' row
 
 gameOver :: Board -> String -> IO ()

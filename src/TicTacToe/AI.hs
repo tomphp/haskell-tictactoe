@@ -27,7 +27,7 @@ parseIfAnd dna = do
 parseStatement :: (Gene, DNA) -> Maybe (ParseTree, DNA)
 parseStatement (gene, dna) = case gene of
   IfAnd      -> parseIfAnd dna
-  Rank value -> Just $ (Result value, dna)
+  Rank value -> Just (Result value, dna)
   _          -> Nothing
 
 parse :: DNA -> Maybe ParseTree

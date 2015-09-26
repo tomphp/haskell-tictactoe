@@ -12,7 +12,7 @@ spec = do
         length newBoard `shouldBe` 9
 
       it "sets all cells to Empty" $ do
-        (head $ nub newBoard) `shouldBe` Empty
+        head (nub newBoard) `shouldBe` Empty
 
     context "setCell" $ do
       let cellNum = 5
@@ -22,8 +22,8 @@ spec = do
         board!!cellNum `shouldBe` Cross
 
       it "doesn't modify other cells" $ do
-        (nub $ take (pred cellNum) board) `shouldBe` [Empty]
-        (nub $ drop (succ cellNum) board) `shouldBe` [Empty]
+        nub (take (pred cellNum) board) `shouldBe` [Empty]
+        nub (drop (succ cellNum) board) `shouldBe` [Empty]
 
       -- it "throws if the cell is already set" $ do
       --   (setCell board Naught cellNum) `shouldThrow` anyErrorCall

@@ -17,7 +17,7 @@ gameLines = [[0, 1, 2], [3, 4, 5], [6, 7, 8],
              [0, 4, 8], [2, 4, 6] ]
            
 cellLine :: Board -> IndexLine -> CellLine
-cellLine board indexes = map (board!!) indexes
+cellLine board = map (board !!)
 
 getWinner :: CellLine -> Maybe Player
 getWinner line = case nub line of
@@ -26,7 +26,7 @@ getWinner line = case nub line of
   _        -> Nothing
 
 lineResults :: Board -> [Maybe Player]
-lineResults board = map (getWinner . (cellLine board)) gameLines
+lineResults board = map (getWinner . cellLine board) gameLines
 
 getWinnerFromBoard :: Board -> Maybe Player
 getWinnerFromBoard board = foldr combineWinner Nothing $ lineResults board
@@ -36,7 +36,7 @@ getWinnerFromBoard board = foldr combineWinner Nothing $ lineResults board
 getGameState :: Board -> GameState
 getGameState board = case getWinnerFromBoard board of
   Just player -> Winner player
-  _           -> if elem Empty board then InPlay else Draw
+  _           -> if Empty `elem` board then InPlay else Draw
 
 switchPlayer :: Player -> Player
 switchPlayer player = case player of
