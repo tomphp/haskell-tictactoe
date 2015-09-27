@@ -70,3 +70,27 @@ spec = do
                      Cross,  Naught, Cross,
                      Empty,  Naught, Naught]
         getGameState board `shouldBe` Winner Naughts
+
+    context "switchPlayer" $ do
+      it "switches from naughts to crosses" $ do
+        switchPlayer Naughts `shouldBe` Crosses
+
+      it "switches from crosses to naughts" $ do
+        switchPlayer Crosses `shouldBe` Naughts
+
+    context "play" $ do
+      let board = [Naught, Empty,  Naught,
+                   Cross,  Naught, Cross,
+                   Empty,  Naught, Naught]
+
+      let emptyCell = 1
+
+      it "adds a naught to the board" $ do
+        let newBoard = play (board, Naughts, emptyCell)
+
+        (newBoard !! emptyCell) `shouldBe` Naught
+
+      it "adds a cross to the board" $ do
+        let newBoard = play (board, Crosses, emptyCell)
+
+        (newBoard !! emptyCell) `shouldBe` Cross

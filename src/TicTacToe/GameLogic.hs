@@ -44,3 +44,7 @@ switchPlayer player = case player of
     Naughts -> Crosses
     Crosses -> Naughts
 
+play :: Move -> Board
+play (board, player, position) = case player of
+  Naughts -> setCell board Naught position
+  Crosses -> setCell board Cross position

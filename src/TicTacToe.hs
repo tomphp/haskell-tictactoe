@@ -3,29 +3,31 @@ import TicTacToe.Board
 import TicTacToe.Player
 import TicTacToe.GameLogic
 
+data GameState = InPlay Player | Win Player | Draw
+
 play :: Move -> Board
 play (board, player, position) = case player of
-    Naughts -> setCell board Naught position
-    Crosses -> setCell board Cross position
+  Naughts -> setCell board Naught position
+  Crosses -> setCell board Cross position
 
 -- Rendering
 cellToChar :: (Cell, Int) -> Char
 cellToChar cell = case cell of
-    (Naught, _)     -> 'O'
-    (Cross, _)      -> 'X'
-    (Empty, number) -> head $ show number
+  (Naught, _)     -> 'O'
+  (Cross, _)      -> 'X'
+  (Empty, number) -> head $ show number
 
 -- Side effecting
 drawBoard :: Board -> IO ()
 drawBoard board = do
-    putStrLn $ formatRow $ take 3 parsedBoard
-    putStrLn "---------"
-    putStrLn $ formatRow $ take 3 $ drop 3 parsedBoard
-    putStrLn "---------"
-    putStrLn $ formatRow $ drop 6 parsedBoard
-    putStrLn ""
-    where parsedBoard = zipWith (curry cellToChar) board [1..9]
-          formatRow row = intersperse ' ' $ intersperse '|' row
+  putStrLn $ formatRow $ take 3 parsedBoard
+  putStrLn "---------"
+  putStrLn $ formatRow $ take 3 $ drop 3 parsedBoard
+  putStrLn "---------"
+  putStrLn $ formatRow $ drop 6 parsedBoard
+  putStrLn ""
+  where parsedBoard = zipWith (curry cellToChar) board [1..9]
+        formatRow row = intersperse ' ' $ intersperse '|' row
 
 gameOver :: Board -> String -> IO ()
 gameOver board message = do
@@ -41,17 +43,27 @@ evaluateState board player = case state of
   _              -> gameLoop board $ switchPlayer player
   where state = getGameState board
 
+generateDna :: Board -> Player -> IO ()
+generateDna board player= do
+  print "generate"
+  gameLoop board player
+
+handleInput :: String -> Board -> Player -> IO ()
+handleInput input board player = case input of
+  "g" -> generateDna board player
+  _   -> evaluateState (play (board, player, pred $ read input)) player
+
 gameLoop :: Board -> Player -> IO ()
 gameLoop board player = do
-    drawBoard board
-    putStr $ case player of
-        Naughts -> "Naughts, "
-        Crosses -> "Crosses, "
-    putStr "choose cell: "
-    position <- getLine
-    evaluateState (play (board, player, pred $ read position))  player 
+  drawBoard board
+  putStr $ case player of
+      Naughts -> "Naughts, "
+      Crosses -> "Crosses, "
+  putStr "choose cell: "
+  input <- getLine
+  handleInput input board player
 
 main :: IO ()
 main = do
-    putStrLn "Tic Tack Toe"
-    gameLoop newBoard Crosses
+  putStrLn "Tic Tack Toe"
+  gameLoop newBoard Crosses
