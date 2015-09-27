@@ -4,7 +4,9 @@ import Data.List (nub)
 import TicTacToe.Board
 import TicTacToe.Player
 
-data GameState = InPlay | Draw | Winner Player deriving (Eq, Show)
+data PlayState = InPlay | Draw | Winner Player deriving (Eq, Show)
+
+type GameState = (PlayState, Board, Player)
 
 type IndexLine = [CellIndex]
 type CellLine  = [Cell]
@@ -34,8 +36,8 @@ getWinnerFromBoard board = foldr combineWinner Nothing $ lineResults board
   where combineWinner carry line = case carry of Nothing -> line
                                                  _       -> carry
 
-getGameState :: Board -> GameState
-getGameState board = case getWinnerFromBoard board of
+getPlayState :: Board -> PlayState
+getPlayState board = case getWinnerFromBoard board of
   Just player -> Winner player
   _           -> if Empty `elem` board then InPlay else Draw
 
@@ -45,6 +47,6 @@ switchPlayer player = case player of
     Crosses -> Naughts
 
 play :: Move -> Board
-play (board, player, position) = case player of
-  Naughts -> setCell board Naught position
-  Crosses -> setCell board Cross position
+play (board, player, position) = setCell board cell position
+  where cell = case player of Naughts -> Naught 
+                              Crosses -> Cross 

@@ -45,31 +45,31 @@ spec = do
       it "is no winner if all cells are not all the same" $ do
         getWinner [Naught, Cross, Cross] `shouldBe` Nothing
 
-    context "getGameState" $ do
+    context "getPlayState" $ do
       it "is in play if there are empty cells and no winning lines" $ do
         let board = [Naught, Cross,  Empty,
                      Naught, Cross,  Cross,
                      Cross,  Naught, Naught]
-        getGameState board `shouldBe` InPlay
+        getPlayState board `shouldBe` InPlay
 
       it "is a draw if all cells are taken and there are no winning lines" $ do
         let board = [Naught, Cross,  Naught,
                      Naught, Cross,  Cross,
                      Cross,  Naught, Naught]
-        getGameState board `shouldBe` Draw
+        getPlayState board `shouldBe` Draw
 
       it "has been won be crosses if the there is a winning line of crosses" $ do
         let board = [Naught, Cross,  Naught,
                      Cross,  Cross,  Cross,
                      Empty,  Naught, Naught]
-        getGameState board `shouldBe` Winner Crosses
+        getPlayState board `shouldBe` Winner Crosses
          
 
       it "has been won be naughts if the there is a winning line of naughts" $ do
         let board = [Naught, Cross,  Naught,
                      Cross,  Naught, Cross,
                      Empty,  Naught, Naught]
-        getGameState board `shouldBe` Winner Naughts
+        getPlayState board `shouldBe` Winner Naughts
 
     context "switchPlayer" $ do
       it "switches from naughts to crosses" $ do
