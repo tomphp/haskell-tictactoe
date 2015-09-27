@@ -7,24 +7,38 @@ import Test.Hspec
 import TicTacToe.AI.DNA
 import TicTacToe.AI.Generator
 
--- This spec uses magic random seeds (fragile!)
+nextRand :: (Gene, StdGen) -> Int
+nextRand (_, gen) = fst $ randomR (0, 100) gen
+
+-- This spec does use some magic random values
 spec :: Spec
 spec = do
   describe "TicTacToe.AI.Generator" $ do
     context "randomGene" $ do
-      it "generates an IfAnd" $ do
-        let gen = mkStdGen 99676
+      context "IfAnd" $ do
+        let seq = [ (0, mkStdGen 0) ]
 
-        fst (randomGene gen) `shouldBe` IfAnd
+        it "generates the Gene" $ do
+          fst (randomGene seq) `shouldBe` IfAnd
 
-      it "generates an IfOr" $ do
-        let gen = mkStdGen 5
+        it "returns the next generator" $ do
+          nextRand (randomGene seq) `shouldBe` 25
 
-        fst (randomGene gen) `shouldBe` IfOr
+      context "IfOr" $ do
+        let seq = [ (1, mkStdGen 0) ]
 
-      it "generates a CurrentCellIs" $ do
-        let gen = mkStdGen 99195
+        it "generates the Gene" $ do
+          fst (randomGene seq) `shouldBe` IfOr
 
-        fst (randomGene gen) `shouldBe` CurrentCellIs 3
+        it "returns the next generator" $ do
+          nextRand (randomGene seq) `shouldBe` 25
 
+      context "CurrentCellIs" $ do
+        let seq = [ (2, mkStdGen 0)
+                  , (5, mkStdGen 1) ]
 
+        it "generates the Gene" $ do
+          fst (randomGene seq) `shouldBe` CurrentCellIs 5
+
+        it "returns the next generator" $ do
+          nextRand (randomGene seq) `shouldBe` 95
