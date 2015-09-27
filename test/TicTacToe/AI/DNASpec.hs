@@ -16,4 +16,3 @@ spec = do
         let dna = [CellIsEmpty 1, CellIsNotEmpty 3]
 
         findGeneType dna isStatement `shouldBe` Nothing
-      

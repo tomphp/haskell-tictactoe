@@ -2,11 +2,14 @@ module TicTacToe.AI.DNA where
 
 import TicTacToe.Board
 
-data Gene = IfAnd | IfOr |
-            CurrentCellIs CellIndex |
-            CellIsEmpty CellIndex | CellIsNotEmpty CellIndex |
-            CellIsMine CellIndex | CellIsTheirs CellIndex |
-            Rank Int deriving (Eq, Show)
+data Gene = IfAnd
+          | IfOr
+          | CurrentCellIs CellIndex
+          | CellIsEmpty CellIndex
+          | CellIsNotEmpty CellIndex
+          | CellIsMine CellIndex
+          | CellIsTheirs CellIndex
+          | Rank Int deriving (Eq, Show)
 
 type DNA = [Gene]
 
