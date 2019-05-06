@@ -1,3 +1,5 @@
+module TicTacToe (main) where 
+
 import Data.List
 import TicTacToe.Board
 import TicTacToe.Player
@@ -52,7 +54,7 @@ gameLoop state player = do
     putStr $ case player of
         Naughts -> "Naughts, "
         Crosses -> "Crosses, "
-    putStr "choose cell: "
+    putStrLn "choose cell: "
     position <- getLine
     evaluateState (play state player $ (read position) - 1)  player 
 
