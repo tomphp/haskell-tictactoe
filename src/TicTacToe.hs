@@ -1,6 +1,8 @@
+{-# LANGUAGE FlexibleContexts #-}
 module TicTacToe (run) where 
 
-import Data.List
+import Control.Error.Safe (headZ, readZ)
+import Data.List.Split (chunksOf)
 import TicTacToe.Board
 import TicTacToe.Player
 import TicTacToe.GameLogic
@@ -16,25 +18,24 @@ play board player position = case player of
     Crosses -> setCell board Cross position
 
 -- Rendering
-cellToChar :: (Cell, Int) -> Char
+cellToChar :: (Cell, Int) -> Text
 cellToChar cell = case cell of
-    (Naught, _)     -> 'O'
-    (Cross, _)      -> 'X'
-    (Empty, number) -> head $ show number
+    (Naught, _)     -> "O"
+    (Cross, _)      -> "X"
+    (Empty, number) -> tshow number
 
 -- Side effecting
 drawBoard :: Board -> IO ()
-drawBoard board = do
-    putStrLn $ formatRow $ take 3 parsedBoard
-    putStrLn "---------"
-    putStrLn $ formatRow $ take 3 $ drop 3 parsedBoard
-    putStrLn "---------"
-    putStrLn $ formatRow $ drop 6 parsedBoard
-    putStrLn ""
-    where parsedBoard = map cellToChar $ zip board [1..9]
-          formatRow row = intersperse ' ' $ intersperse '|' row
+drawBoard board =
+  putStrLn rendered
+    where
+      rendered    = intercalate "\n----------\n" formatted
+      formatted   = map formatRow rows
+      rows        = chunksOf 3 parsedBoard
+      parsedBoard = zipWith (curry cellToChar) board [1..9]
+      formatRow   = unwords . intersperse "|"
 
-gameOver :: Board -> String -> IO ()
+gameOver :: Board -> Text -> IO ()
 gameOver board message = do
   drawBoard board
   putStr "Game over: "
@@ -55,8 +56,8 @@ gameLoop state player = do
         Naughts -> "Naughts, "
         Crosses -> "Crosses, "
     putStrLn "choose cell: "
-    position <- getLine
-    evaluateState (play state player $ (read position) - 1)  player 
+    (Just position) <- readZ . unpack <$> getLine
+    evaluateState (play state player $ position - 1)  player 
 
 run :: IO ()
 run = do

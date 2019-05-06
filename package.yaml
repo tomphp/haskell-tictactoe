@@ -13,10 +13,13 @@ copyright:           "2019 Author name here"
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/haskell-customer-service#readme>
+description:         A playground for messing about with Haskell
 
 dependencies:
-- base >= 4.7 && < 5
+- base-noprelude >= 4.7 && < 5
+- classy-prelude
+- errors
+- split
 
 default-extensions:
 - OverloadedStrings

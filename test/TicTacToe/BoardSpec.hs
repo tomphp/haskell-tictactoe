@@ -1,5 +1,6 @@
 module TicTacToe.BoardSpec where
 
+import Control.Error.Safe (atZ)
 import Data.List (nub)
 import Test.Hspec
 import TicTacToe.Board
@@ -12,14 +13,14 @@ spec = do
         length newBoard `shouldBe` 9
 
       it "sets all cells to Empty" $ do
-        (head $ nub newBoard) `shouldBe` Empty
+        nub newBoard `shouldBe` [Empty]
 
     context "setCell" $ do
       let cellNum = 5
       let board = setCell newBoard Cross cellNum 
 
       it "sets a cell on the board" $ do
-        board!!cellNum `shouldBe` Cross
+        board `atZ` cellNum `shouldBe` Just Cross
 
       it "doesn't modify other cells" $ do
         (nub $ take (pred cellNum) board) `shouldBe` [Empty]
@@ -27,5 +28,3 @@ spec = do
 
       -- it "throws if the cell is already set" $ do
       --   (setCell board Naught cellNum) `shouldThrow` anyErrorCall
-
-

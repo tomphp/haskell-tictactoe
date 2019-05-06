@@ -30,7 +30,7 @@ spec = do
         let board = [Naught, Cross,  Empty,
                      Cross,  Naught, Empty,
                      Cross,  Naught, Empty]
-        cellLine board [0, 4, 8] `shouldBe` [Naught, Naught, Empty]
+        cellLine board [0, 4, 8] `shouldBe` Just [Naught, Naught, Empty]
 
     context "getWinner" $ do
       it "is no winner if all cells are empty" $ do
