@@ -29,12 +29,12 @@ spec = do
       -- it "throws if the cell is already set" $ do
       --   (setCell board Naught cellNum) `shouldThrow` anyErrorCall
     
-    describe "drawBoard" $ do
+    describe "show" $ do
       it "shows an empty board" $
-        drawBoard newBoard `shouldBe` concat [ "1 | 2 | 3\n"
-                                             , "---------\n"
-                                             , "4 | 5 | 6\n"
-                                             , "---------\n"
-                                             , "7 | 8 | 9"
-                                             ]
+        show newBoard `shouldBe` concat [ "1 | 2 | 3\n"
+                                        , "---------\n"
+                                        , "4 | 5 | 6\n"
+                                        , "---------\n"
+                                        , "7 | 8 | 9"
+                                        ]
                     

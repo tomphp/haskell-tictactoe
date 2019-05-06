@@ -4,7 +4,6 @@ module TicTacToe.Board
   , cells
   , newBoard
   , setCell
-  , drawBoard
   ) where
 
 import Control.Error.Safe (atZ)
@@ -29,9 +28,8 @@ setCell (Board board) cell position =
   where
     currentValue = board `atZ` position
 
-drawBoard :: Board -> Text
-drawBoard (Board board) =
-  rendered
+instance Show Board where
+  show (Board board) = unpack rendered
     where
       rendered    = intercalate "\n---------\n" formatted
       formatted   = map formatRow rows

@@ -14,11 +14,11 @@ play :: Board -> Player -> Int -> Board
 play board Naughts position = setCell board Naught position
 play board Crosses position = setCell board Cross position
 
-drawBoard' board = putStrLn $ drawBoard board
+drawBoard = putStrLn . tshow
 
 gameOver :: Board -> Text -> IO ()
 gameOver board message = do
-  drawBoard' board
+  drawBoard board
   putStr "Game over: "
   putStrLn message
 
@@ -32,7 +32,7 @@ evaluateState board player = case state of
 
 gameLoop :: Board -> Player -> IO ()
 gameLoop state player = do
-    drawBoard' state
+    drawBoard state
     putStr (tshow player)
     putStr ", "
     putStrLn "choose cell: "
