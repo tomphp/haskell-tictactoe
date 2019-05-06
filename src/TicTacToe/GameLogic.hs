@@ -15,7 +15,7 @@ gameLines = [[0, 1, 2], [3, 4, 5], [6, 7, 8],
              [0, 4, 8], [2, 4, 6] ]
            
 cellLine :: Board -> IndexLine -> Maybe CellLine
-cellLine board indexes = sequence $ map (atZ board) indexes
+cellLine (Board board) indexes = sequence $ map (atZ $ board) indexes
 
 getWinner :: CellLine -> Maybe Player
 getWinner line = case line of
@@ -34,4 +34,4 @@ getWinnerFromBoard board = foldr combineWinner Nothing $ lineResults board
 getGameState :: Board -> GameState
 getGameState board = case getWinnerFromBoard board of
   Just player -> Winner player
-  _           -> if elem Empty board then InPlay else Draw
+  _           -> if elem Empty (cells board) then InPlay else Draw

@@ -27,9 +27,10 @@ spec = do
 
     context "cellLine" $ do
       it "gets a line from the board" $ do
-        let board = [Naught, Cross,  Empty,
-                     Cross,  Naught, Empty,
-                     Cross,  Naught, Empty]
+        let board = Board [ Naught, Cross,  Empty
+                          , Cross,  Naught, Empty
+                          , Cross,  Naught, Empty
+                          ]
         cellLine board [0, 4, 8] `shouldBe` Just [Naught, Naught, Empty]
 
     context "getWinner" $ do
@@ -47,26 +48,30 @@ spec = do
 
     context "getGameState" $ do
       it "is in play if there are empty cells and no winning lines" $ do
-        let board = [Naught, Cross,  Empty,
-                     Naught, Cross,  Cross,
-                     Cross,  Naught, Naught]
+        let board = Board [ Naught, Cross,  Empty
+                          , Naught, Cross,  Cross
+                          , Cross,  Naught, Naught
+                          ]
         getGameState board `shouldBe` InPlay
 
       it "is a draw if all cells are taken and there are no winning lines" $ do
-        let board = [Naught, Cross,  Naught,
-                     Naught, Cross,  Cross,
-                     Cross,  Naught, Naught]
+        let board = Board [ Naught, Cross,  Naught
+                          , Naught, Cross,  Cross
+                          , Cross,  Naught, Naught
+                          ]
         getGameState board `shouldBe` Draw
 
       it "has been won be crosses if the there is a winning line of crosses" $ do
-        let board = [Naught, Cross,  Naught,
-                     Cross,  Cross,  Cross,
-                     Empty,  Naught, Naught]
+        let board = Board [ Naught, Cross,  Naught
+                          , Cross,  Cross,  Cross
+                          , Empty,  Naught, Naught
+                          ]
         getGameState board `shouldBe` Winner Crosses
          
 
       it "has been won be naughts if the there is a winning line of naughts" $ do
-        let board = [Naught, Cross,  Naught,
-                     Cross,  Naught, Cross,
-                     Empty,  Naught, Naught]
+        let board = Board [ Naught, Cross,  Naught
+                          , Cross,  Naught, Cross
+                          , Empty,  Naught, Naught
+                          ]
         getGameState board `shouldBe` Winner Naughts
