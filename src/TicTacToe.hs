@@ -1,4 +1,4 @@
-module TicTacToe (main) where 
+module TicTacToe (run) where 
 
 import Data.List
 import TicTacToe.Board
@@ -58,7 +58,7 @@ gameLoop state player = do
     position <- getLine
     evaluateState (play state player $ (read position) - 1)  player 
 
-main :: IO ()
-main = do
+run :: IO ()
+run = do
     putStrLn "Tic Tack Toe"
     gameLoop newBoard Crosses
