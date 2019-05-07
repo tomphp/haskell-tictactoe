@@ -4,7 +4,7 @@
 module TicTacToe (run) where 
 
 import Control.Error.Safe (headZ, readZ)
-import Control.Monad.Loops (whileM_)
+import Control.Monad.Loops (untilJust, whileM_)
 import Control.Monad.State.Strict (MonadState, StateT, evalStateT, get, put, modify)
 
 import           TicTacToe.Board (Board, Cell(..))
@@ -30,6 +30,11 @@ class Monad m => Actions m where
   switchPlayer :: m ()
   setCell      :: Int -> m ()
 
+class Monad m => UI m where
+  turnScreen :: m ()
+  gameOverScreen :: m ()
+  getPositionInput :: m Int
+
 cell :: Player -> Cell
 cell Naughts = Naught
 cell Crosses = Cross
@@ -45,36 +50,39 @@ instance Monad m => Actions (Game m) where
     p <- player
     modify (\s -> s { theBoard = Board.setCell (theBoard s) (cell p) position })
 
+instance MonadIO m => UI (Game m) where
+  gameOverScreen = do
+    b <- board
+    let state = GameLogic.getGameState b
+    drawBoard b
+    putStr "Game over: "
+    putStrLn (tshow state)
+
+  turnScreen = do
+    b <- board
+    p <- player
+    drawBoard b
+    putStr (tshow p)
+    putStr ", "
+    putStrLn "choose cell: "
+
+  getPositionInput =
+    untilJust $ do
+      pos <- readZ . unpack <$> getLine
+      when (isNothing pos) $ putStrLn "Try again..."
+      return $ pred <$> pos
+
 drawBoard :: MonadIO m => Board -> m ()
 drawBoard = putStrLn . tshow
 
-gameOverScreen :: (Actions m, MonadIO m) => m ()
-gameOverScreen = do
-  b <- board
-  let state = GameLogic.getGameState b
-  drawBoard b
-  putStr "Game over: "
-  putStrLn (tshow state)
-
-turnScreen :: (Actions m, MonadIO m) => m ()
-turnScreen = do
-  b <- board
-  p <- player
-  drawBoard b
-  putStr (tshow p)
-  putStr ", "
-  putStrLn "choose cell: "
-
-playTurn :: (Actions m, MonadIO m) => m ()
+playTurn :: (Actions m, UI m) => m ()
 playTurn = do
   turnScreen
+  position <- getPositionInput
+  setCell position
+  switchPlayer
 
-  posMay <- readZ . unpack <$> getLine
-  case posMay of
-    Just position -> setCell (position - 1) >> switchPlayer
-    Nothing       -> void $ putStrLn "Fail"
-
-gameLoop :: (Actions m, MonadIO m, Monad m) => m ()
+gameLoop :: (Actions m, UI m, Monad m) => m ()
 gameLoop = do
   whileM_ gameIsRunning playTurn
   gameOverScreen
