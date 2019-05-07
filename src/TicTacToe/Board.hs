@@ -2,7 +2,7 @@ module TicTacToe.Board
   ( Board(..)
   , Cell(..)
   , cells
-  , newBoard
+  , new
   , setCell
   ) where
 
@@ -13,8 +13,8 @@ data Cell = Empty | Naught | Cross deriving (Eq, Show)
 
 newtype Board = Board [Cell]
 
-newBoard :: Board
-newBoard = Board $ replicate 9 Empty
+new :: Board
+new = Board $ replicate 9 Empty
 
 cells :: Board -> [Cell]
 cells (Board cs) = cs

@@ -2,7 +2,8 @@ module TicTacToe.PlayerSpec where
 
 import Test.Hspec
 
-import TicTacToe.Player (Player(..), switch)
+import           TicTacToe.Player (Player(..))
+import qualified TicTacToe.Player as Player
 
 spec :: Spec
 spec = describe "TicTacToe.Player" $ do
@@ -13,5 +14,5 @@ spec = describe "TicTacToe.Player" $ do
 
   describe "switch" $
     it "switch players" $ do
-      switch Naughts `shouldBe` Crosses
-      switch Crosses `shouldBe` Naughts
+      Player.switch Naughts `shouldBe` Crosses
+      Player.switch Crosses `shouldBe` Naughts

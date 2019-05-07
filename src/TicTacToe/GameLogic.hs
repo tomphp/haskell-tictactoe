@@ -1,4 +1,10 @@
-module TicTacToe.GameLogic where
+module TicTacToe.GameLogic
+  ( GameState(..)
+  , getGameState
+  , gameLines
+  , cellLine
+  , getWinner
+  ) where
 
 import Control.Error.Safe (atZ)
 import TicTacToe.Board
@@ -15,7 +21,7 @@ gameLines = [[0, 1, 2], [3, 4, 5], [6, 7, 8],
              [0, 4, 8], [2, 4, 6] ]
            
 cellLine :: Board -> IndexLine -> Maybe CellLine
-cellLine (Board board) indexes = sequence $ map (atZ $ board) indexes
+cellLine (Board board) = mapM (atZ board)
 
 getWinner :: CellLine -> Maybe Player
 getWinner line = case line of
@@ -24,7 +30,7 @@ getWinner line = case line of
   _                        -> Nothing
 
 lineResults :: Board -> [Maybe Player]
-lineResults board = map (\line -> cellLine board line >>= getWinner) gameLines
+lineResults board = map (cellLine board >=> getWinner) gameLines
 
 getWinnerFromBoard :: Board -> Maybe Player
 getWinnerFromBoard board = foldr combineWinner Nothing $ lineResults board
@@ -34,4 +40,4 @@ getWinnerFromBoard board = foldr combineWinner Nothing $ lineResults board
 getGameState :: Board -> GameState
 getGameState board = case getWinnerFromBoard board of
   Just player -> Winner player
-  _           -> if elem Empty (cells board) then InPlay else Draw
+  _           -> if Empty `elem` cells board then InPlay else Draw

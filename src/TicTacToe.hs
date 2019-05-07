@@ -2,13 +2,17 @@
 module TicTacToe (run) where 
 
 import Control.Error.Safe (headZ, readZ)
-import TicTacToe.Board
-import TicTacToe.Player
-import TicTacToe.GameLogic
+
+import           TicTacToe.Board (Board, Cell(..))
+import qualified TicTacToe.Board as Board
+import           TicTacToe.Player (Player(..))
+import qualified TicTacToe.Player as Player
+import           TicTacToe.GameLogic (GameState(..))
+import qualified TicTacToe.GameLogic as GameLogic
 
 play :: Board -> Player -> Int -> Board
-play board Naughts position = setCell board Naught position
-play board Crosses position = setCell board Cross position
+play board Naughts position = Board.setCell board Naught position
+play board Crosses position = Board.setCell board Cross position
 
 drawBoard = putStrLn . tshow
 
@@ -23,8 +27,8 @@ evaluateState board player = case state of
     Draw           -> gameOver board "Draw"
     Winner Crosses -> gameOver board "Crosses win"
     Winner Naughts -> gameOver board "Naughts win"
-    _              -> gameLoop board $ switch player
-  where state = getGameState board
+    _              -> gameLoop board $ Player.switch player
+  where state = GameLogic.getGameState board
 
 gameLoop :: Board -> Player -> IO ()
 gameLoop state player = do
@@ -38,4 +42,4 @@ gameLoop state player = do
 run :: IO ()
 run = do
     putStrLn "Tic Tack Toe"
-    gameLoop newBoard Crosses
+    gameLoop Board.new Crosses
