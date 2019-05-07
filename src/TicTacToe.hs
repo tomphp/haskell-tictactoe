@@ -26,11 +26,8 @@ gameOver board message = do
 evaluateState :: Board -> Player -> IO ()
 evaluateState board player = case state of
     InPlay -> gameLoop board $ Player.switch player
-    _      -> gameOver board (message state)
+    _      -> gameOver board (tshow state)
   where state = GameLogic.getGameState board
-        message Draw            = "Draw"
-        message (Winner player) = tshow player <> " win"
-        message _               = "Game is in play"
 
 gameLoop :: Board -> Player -> IO ()
 gameLoop state player = do
@@ -43,5 +40,5 @@ gameLoop state player = do
 
 run :: IO ()
 run = do
-    putStrLn "Tic Tack Toe"
+    putStrLn "Tic Tac Toe"
     gameLoop Board.new Crosses

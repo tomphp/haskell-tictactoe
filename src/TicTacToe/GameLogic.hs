@@ -10,7 +10,12 @@ import Control.Error.Safe (atZ)
 import TicTacToe.Board
 import TicTacToe.Player
 
-data GameState = InPlay | Draw | Winner Player deriving (Eq, Show)
+data GameState = InPlay | Draw | Winner Player deriving (Eq)
+
+instance Show GameState where
+  show InPlay          = "Game is in play"
+  show Draw            = "Draw"
+  show (Winner player) = show player <> " win"
 
 type IndexLine = [Int]
 type CellLine  = [Cell]
