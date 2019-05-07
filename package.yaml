@@ -20,6 +20,7 @@ dependencies:
 - classy-prelude
 - errors
 - mtl
+- monad-loops
 - split
 
 default-extensions:

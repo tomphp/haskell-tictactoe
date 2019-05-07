@@ -4,6 +4,7 @@
 module TicTacToe (run) where 
 
 import Control.Error.Safe (headZ, readZ)
+import Control.Monad.Loops (whileM_)
 import Control.Monad.State.Strict (MonadState, StateT, evalStateT, get, put, modify)
 
 import           TicTacToe.Board (Board, Cell(..))
@@ -35,51 +36,56 @@ cell Crosses = Cross
 
 instance Monad m => Actions (Game m) where
   player = currentPlayer <$> get
+
   board = theBoard <$> get
+
   switchPlayer = modify (\s -> s { currentPlayer = Player.switch (currentPlayer s) })
+
   setCell position = do
     p <- player
     modify (\s -> s { theBoard = Board.setCell (theBoard s) (cell p) position })
 
-play :: Board -> Player -> Int -> Board
-play board Naughts position = Board.setCell board Naught position
-play board Crosses position = Board.setCell board Cross position
-
 drawBoard :: MonadIO m => Board -> m ()
 drawBoard = putStrLn . tshow
 
-gameOver :: MonadIO m =>  Board -> Text -> m ()
-gameOver board message = do
-  drawBoard board
-  putStr "Game over: "
-  putStrLn message
-
-evaluateState :: Game IO ()
-evaluateState = do
+gameOverScreen :: (Actions m, MonadIO m) => m ()
+gameOverScreen = do
   b <- board
   let state = GameLogic.getGameState b
-  case state of
-    InPlay -> switchPlayer >> gameLoop
-    _      -> gameOver b (tshow state)
+  drawBoard b
+  putStr "Game over: "
+  putStrLn (tshow state)
 
-gameLoop :: Game IO ()
+turnScreen :: (Actions m, MonadIO m) => m ()
+turnScreen = do
+  b <- board
+  p <- player
+  drawBoard b
+  putStr (tshow p)
+  putStr ", "
+  putStrLn "choose cell: "
+
+playTurn :: (Actions m, MonadIO m) => m ()
+playTurn = do
+  turnScreen
+
+  posMay <- readZ . unpack <$> getLine
+  case posMay of
+    Just position -> setCell (position - 1) >> switchPlayer
+    Nothing       -> void $ putStrLn "Fail"
+
+gameLoop :: (Actions m, MonadIO m, Monad m) => m ()
 gameLoop = do
-    state <- board
-    player <- player
-    drawBoard state
-    putStr (tshow player)
-    putStr ", "
-    putStrLn "choose cell: "
-    posMay <- readZ . unpack <$> getLine
-    case posMay of
-      Just position -> do setCell (position - 1)
-                          evaluateState
-      Nothing       -> void $ putStrLn "Fail"
+  whileM_ gameIsRunning playTurn
+  gameOverScreen
 
-run' :: Game IO ()
-run' = gameLoop
+gameIsRunning :: Actions m => m Bool
+gameIsRunning = (== InPlay) <$> gameState
+
+gameState :: Actions m => m GameState
+gameState = GameLogic.getGameState <$> board
 
 run :: IO ()
 run = do
     putStrLn "Tic Tac Toe"
-    evalStateT (runGame run') newState
+    evalStateT (runGame gameLoop) newState
