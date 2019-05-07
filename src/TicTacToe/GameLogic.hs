@@ -39,8 +39,8 @@ lineResults board = map (cellLine board >=> getWinner) gameLines
 
 getWinnerFromBoard :: Board -> Maybe Player
 getWinnerFromBoard board = foldr combineWinner Nothing $ lineResults board
-  where combineWinner carry line = case carry of Nothing -> line
-                                                 _       -> carry
+  where combineWinner Nothing line = line
+        combineWinner carry   _    = carry
 
 getGameState :: Board -> GameState
 getGameState board = case getWinnerFromBoard board of

@@ -16,10 +16,10 @@ spec = do
     describe "GameState" $ do
       describe "show" $ do
         it "returns a string" $ do
-        show InPlay `shouldBe` "Game is in play"
-        show Draw `shouldBe` "Draw"
-        show (Winner Crosses) `shouldBe` "Crosses win"
-        show (Winner Naughts) `shouldBe` "Naughts win"
+          show InPlay `shouldBe` "Game is in play"
+          show Draw `shouldBe` "Draw"
+          show (Winner Crosses) `shouldBe` "Crosses win"
+          show (Winner Naughts) `shouldBe` "Naughts win"
 
     context "gameLines" $ do
       it "contains all horizontal lines on the board" $ do
