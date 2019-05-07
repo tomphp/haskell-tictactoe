@@ -14,6 +14,7 @@ play :: Board -> Player -> Int -> Board
 play board Naughts position = Board.setCell board Naught position
 play board Crosses position = Board.setCell board Cross position
 
+drawBoard :: Board -> IO ()
 drawBoard = putStrLn . tshow
 
 gameOver :: Board -> Text -> IO ()
@@ -24,11 +25,12 @@ gameOver board message = do
 
 evaluateState :: Board -> Player -> IO ()
 evaluateState board player = case state of
-    Draw           -> gameOver board "Draw"
-    Winner Crosses -> gameOver board "Crosses win"
-    Winner Naughts -> gameOver board "Naughts win"
-    _              -> gameLoop board $ Player.switch player
+    InPlay -> gameLoop board $ Player.switch player
+    _      -> gameOver board (message state)
   where state = GameLogic.getGameState board
+        message Draw            = "Draw"
+        message (Winner player) = tshow player <> " win"
+        message _               = "Game is in play"
 
 gameLoop :: Board -> Player -> IO ()
 gameLoop state player = do
