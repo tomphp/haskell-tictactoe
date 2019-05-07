@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a6f5b06ae26c86ef2343f457f02adaa2cc0f92cdfcd6defd11908af033823ebc
+-- hash: 0718b65f94432fcc272ea0abfcdb2aec23670f277a0bcd3c395f4c90e1964ac9
 
 name:           haskell-tictactoe
 version:        0.1.0.0
@@ -62,6 +62,7 @@ test-suite haskell-tictactoe-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      PreludeSpec
       TicTacToe.BoardSpec
       TicTacToe.GameLogicSpec
       TicTacToe.PlayerSpec

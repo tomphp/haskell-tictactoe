@@ -6,10 +6,6 @@ import TicTacToe.Board
 import TicTacToe.Player
 import TicTacToe.GameLogic
 
-switchPlayer :: Player -> Player
-switchPlayer Naughts = Crosses
-switchPlayer Crosses = Naughts
-
 play :: Board -> Player -> Int -> Board
 play board Naughts position = setCell board Naught position
 play board Crosses position = setCell board Cross position
@@ -27,7 +23,7 @@ evaluateState board player = case state of
     Draw           -> gameOver board "Draw"
     Winner Crosses -> gameOver board "Crosses win"
     Winner Naughts -> gameOver board "Naughts win"
-    _              -> gameLoop board $ switchPlayer player
+    _              -> gameLoop board $ switch player
   where state = getGameState board
 
 gameLoop :: Board -> Player -> IO ()
