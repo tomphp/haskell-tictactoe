@@ -1,16 +1,23 @@
 module TicTacToe (run) where 
 
 import Control.Monad.Loops (whileM_)
-import Control.Monad.State.Strict (evalStateT)
 
 import           TicTacToe.Actions   (Actions)
 import qualified TicTacToe.Actions   as Actions
-import           TicTacToe.Game      (runGame)
-import           TicTacToe.GameLogic (GameState(..))
-import qualified TicTacToe.GameLogic as GameLogic
+import qualified TicTacToe.Game      as Game
 import           TicTacToe.UI        (UI)
 import qualified TicTacToe.State     as State
 import qualified TicTacToe.UI        as UI
+
+run :: IO ()
+run = do
+    putStrLn "Tic Tac Toe"
+    Game.run gameLoop State.new
+
+gameLoop :: (Actions m, UI m, Monad m) => m ()
+gameLoop = do
+  whileM_ Actions.gameIsRunning playTurn
+  UI.gameOverScreen
 
 playTurn :: (Actions m, UI m) => m ()
 playTurn = do
@@ -19,18 +26,3 @@ playTurn = do
   Actions.setCell position
   Actions.switchPlayer
 
-gameLoop :: (Actions m, UI m, Monad m) => m ()
-gameLoop = do
-  whileM_ gameIsRunning playTurn
-  UI.gameOverScreen
-
-gameIsRunning :: Actions m => m Bool
-gameIsRunning = (== InPlay) <$> gameState
-
-gameState :: Actions m => m GameState
-gameState = GameLogic.getGameState <$> Actions.board
-
-run :: IO ()
-run = do
-    putStrLn "Tic Tac Toe"
-    evalStateT (runGame gameLoop) State.new

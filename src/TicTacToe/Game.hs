@@ -1,10 +1,10 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module TicTacToe.Game where
+module TicTacToe.Game (run) where 
 
 import Control.Error.Safe (readZ)
 import Control.Monad.Loops (untilJust)
-import Control.Monad.State.Strict (MonadState, StateT, get, modify)
+import Control.Monad.State.Strict (MonadState, StateT, evalStateT, get, modify)
 
 import           TicTacToe.Actions   (Actions(..))
 import qualified TicTacToe.Actions   as Actions
@@ -20,6 +20,9 @@ import qualified TicTacToe.UI        as UI
 
 newtype Game m a = Game { runGame :: StateT TheState m a }
   deriving (Functor, Applicative, Monad, MonadIO, MonadState TheState)
+
+run :: Monad m => Game m a -> TheState -> m a
+run game = evalStateT (runGame game)
 
 instance Monad m => Actions (Game m) where
   player = State.player <$> get
