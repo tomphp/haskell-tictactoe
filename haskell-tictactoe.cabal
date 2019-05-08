@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d121aa0d52a099979d09c432d3427625a975c7564de87ee2a6aa4ab142a59875
+-- hash: c370ebc81dff30b88f05e20edffa2652c994e05903ca97dda4307458d18bbc89
 
 name:           haskell-tictactoe
 version:        0.1.0.0
@@ -26,9 +26,11 @@ library
   exposed-modules:
       Prelude
       TicTacToe
+      TicTacToe.Actions
       TicTacToe.Board
       TicTacToe.GameLogic
       TicTacToe.Player
+      TicTacToe.UI
   other-modules:
       Paths_haskell_tictactoe
   hs-source-dirs:
