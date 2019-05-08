@@ -1,11 +1,8 @@
 module TicTacToe.GameLogicSpec where
 
-import Data.List (nub)
-import Data.Maybe
 import Test.Hspec
 
 import           TicTacToe.Board     (Board(..), Cell(..))
-import qualified TicTacToe.Board     as Board
 import           TicTacToe.GameLogic (GameState(..))
 import qualified TicTacToe.GameLogic as GameLogic
 import           TicTacToe.Player    (Player(..))
