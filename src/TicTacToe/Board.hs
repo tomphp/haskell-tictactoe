@@ -19,8 +19,8 @@ new = Board $ replicate 9 Empty
 cells :: Board -> [Cell]
 cells (Board cs) = cs
 
-setCell :: Board -> Cell -> Int -> Board
-setCell (Board board) cell position = 
+setCell :: Cell -> Int -> Board -> Board
+setCell cell position (Board board) = 
   case currentValue of
     Nothing    -> error "Attempting to set a cell which does not exist"
     Just Empty -> Board $ take position board ++ cell : drop (succ position) board

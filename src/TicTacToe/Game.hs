@@ -4,7 +4,7 @@ module TicTacToe.Game where
 
 import Control.Error.Safe (readZ)
 import Control.Monad.Loops (untilJust)
-import Control.Monad.State.Strict (MonadState, StateT, get, put, modify)
+import Control.Monad.State.Strict (MonadState, StateT, get, modify)
 
 import           TicTacToe.Actions   (Actions(..))
 import qualified TicTacToe.Actions   as Actions
@@ -22,15 +22,15 @@ newtype Game m a = Game { runGame :: StateT TheState m a }
   deriving (Functor, Applicative, Monad, MonadIO, MonadState TheState)
 
 instance Monad m => Actions (Game m) where
-  player = State.currentPlayer <$> get
+  player = State.player <$> get
 
-  board = State.theBoard <$> get
+  board = State.board <$> get
 
-  switchPlayer = modify (\s -> s { State.currentPlayer = Player.switch (State.currentPlayer s) })
+  switchPlayer = modify $ State.updatePlayer Player.switch
 
   setCell position = do
     p <- player
-    modify (\s -> s { State.theBoard = Board.setCell (State.theBoard s) (cell p) position })
+    modify $ State.updateBoard $ Board.setCell (cell p) position
 
 instance MonadIO m => UI (Game m) where
   gameOverScreen = do

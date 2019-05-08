@@ -1,8 +1,10 @@
 module TicTacToe.State
   ( TheState
-  , currentPlayer
-  , newState
-  , theBoard
+  , board
+  , player
+  , new
+  , updateBoard
+  , updatePlayer
   )
   where
 
@@ -10,9 +12,15 @@ import           TicTacToe.Board (Board)
 import qualified TicTacToe.Board as Board
 import           TicTacToe.Player (Player(Crosses))
 
-data TheState = TheState { theBoard :: Board
-                         , currentPlayer :: Player
+data TheState = TheState { board :: Board
+                         , player :: Player
                          }
 
-newState :: TheState
-newState = TheState { theBoard = Board.new, currentPlayer = Crosses }
+new :: TheState
+new = TheState { board = Board.new, player = Crosses }
+
+updatePlayer :: (Player -> Player) -> TheState -> TheState
+updatePlayer update state = state { player = update (player state) }
+
+updateBoard :: (Board -> Board) -> TheState -> TheState
+updateBoard update state = state { board = update  (board state) }

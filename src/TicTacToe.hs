@@ -33,4 +33,4 @@ gameState = GameLogic.getGameState <$> Actions.board
 run :: IO ()
 run = do
     putStrLn "Tic Tac Toe"
-    evalStateT (runGame gameLoop) State.newState
+    evalStateT (runGame gameLoop) State.new

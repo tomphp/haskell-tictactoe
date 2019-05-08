@@ -18,7 +18,7 @@ spec = do
 
     describe "setCell" $ do
       let cellNum = 5
-      let board = setCell new Cross cellNum 
+      let board = setCell Cross cellNum new
 
       it "sets a cell on the board" $ do
         cells board `atZ` cellNum `shouldBe` Just Cross
