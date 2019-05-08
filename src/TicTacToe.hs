@@ -1,5 +1,3 @@
-{-# LANGUAGE FlexibleContexts           #-}
-
 module TicTacToe (run) where 
 
 import Control.Monad.Loops (whileM_)
@@ -7,11 +5,7 @@ import Control.Monad.State.Strict (evalStateT)
 
 import           TicTacToe.Actions   (Actions)
 import qualified TicTacToe.Actions   as Actions
-import           TicTacToe.Board     (Board, Cell(..))
-import qualified TicTacToe.Board     as Board
 import           TicTacToe.Game      (runGame)
-import           TicTacToe.Player    (Player(..))
-import qualified TicTacToe.Player    as Player
 import           TicTacToe.GameLogic (GameState(..))
 import qualified TicTacToe.GameLogic as GameLogic
 import           TicTacToe.UI        (UI)
