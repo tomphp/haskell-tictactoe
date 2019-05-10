@@ -1,9 +1,9 @@
 module TicTacToe.Game
-  ( Game(..)
-  , GameState(..)
+  ( State(..)
+  , Result(..)
   , UI(..)
   , main
-  , state
+  , result
   ) where
 
 import Control.Monad.Loops (whileM_)
@@ -11,44 +11,54 @@ import Control.Monad.Loops (whileM_)
 import           TicTacToe.Board  (Board, Cell(..))
 import qualified TicTacToe.Board  as Board
 import           TicTacToe.Player (Player(..))
+import qualified TicTacToe.Player as Player
 
-
-main :: (Game m, UI m, Monad m) => m ()
+main :: (State m, UI m, Monad m) => m ()
 main = do
   whileM_ isInPlay playTurn
-  gameOverScreen =<< state
-  where isInPlay = (== InPlay) <$> state
+  gameOverScreen =<< result
+  where isInPlay = (== InPlay) <$> result
 
-playTurn :: (Game m, UI m) => m ()
+playTurn :: (State m, UI m) => m ()
 playTurn = do
   turnScreen
   position <- getPositionInput
   setCell position
   switchPlayer
 
-class Monad m => Game m where
+class Monad m => State m where
   player       :: m Player
   board        :: m Board
-  switchPlayer :: m ()
-  setCell      :: Int -> m ()
+  updatePlayer :: (Player -> Player) -> m ()
+  updateBoard  :: (Board -> Board) -> m ()
 
 class Monad m => UI m where
   turnScreen :: m ()
-  gameOverScreen :: GameState -> m ()
+  gameOverScreen :: Result -> m ()
   getPositionInput :: m Int
 
-state :: Game m => m GameState
-state = stateFromBoard <$> board
+result :: State m => m Result
+result = resultFromBoard <$> board
 
-data GameState = InPlay | Draw | Winner Player deriving (Eq)
+switchPlayer :: State m => m ()
+switchPlayer = updatePlayer Player.switch
 
-instance Show GameState where
+setCell :: State m => Int -> m ()
+setCell position = do
+  p <- player
+  updateBoard $ Board.setCell (cell p) position
+  where cell Naughts = Naught
+        cell Crosses = Cross
+
+data Result = InPlay | Draw | Winner Player deriving (Eq)
+
+instance Show Result where
   show InPlay          = "TerminalGame is in play"
   show Draw            = "Draw"
   show (Winner p) = show p <> " win"
 
-stateFromBoard :: Board -> GameState
-stateFromBoard b = case winnerFromBoard b of
+resultFromBoard :: Board -> Result
+resultFromBoard b = case winnerFromBoard b of
   Just p  -> Winner p
   Nothing -> if Empty `elem` Board.cells b then InPlay else Draw
 

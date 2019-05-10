@@ -2,13 +2,13 @@ module TicTacToe.GameSpec where
 
 import Test.Hspec
 
-import TicTacToe.Game (GameState(..))
+import TicTacToe.Game (Result(..))
 import TicTacToe.Player  (Player(..))
 
 spec :: Spec
 spec = do
   describe "TicTacToe.Game" $ do
-    describe "GameState" $ do
+    describe "Result" $ do
       describe "show" $ do
         it "returns a string" $ do
           show InPlay `shouldBe` "TerminalGame is in play"

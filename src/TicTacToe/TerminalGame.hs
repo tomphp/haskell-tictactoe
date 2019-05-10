@@ -6,12 +6,11 @@ import Control.Error.Safe (readZ)
 import Control.Monad.Loops (untilJust)
 import Control.Monad.State.Strict (MonadState, StateT, evalStateT, get, modify)
 
-import           TicTacToe.Game      (Game(..), UI(..))
+import           TicTacToe.Game      (State(..), UI(..))
 import qualified TicTacToe.Game      as Game
-import           TicTacToe.Board     (Board, Cell(..))
+import           TicTacToe.Board     (Board)
 import qualified TicTacToe.Board     as Board
 import           TicTacToe.Player    (Player(..))
-import qualified TicTacToe.Player    as Player
 
 newtype TerminalGame m a = TerminalGame { runTerminalGame :: StateT TheState m a }
   deriving (Functor, Applicative, Monad, MonadIO, MonadState TheState)
@@ -26,33 +25,27 @@ run game = evalStateT (runTerminalGame game) newState
 newState :: TheState
 newState = TheState { theBoard = Board.new, thePlayer = Crosses }
 
-instance Monad m => Game (TerminalGame m) where
+instance Monad m => State (TerminalGame m) where
   player = thePlayer <$> get
 
   board = theBoard <$> get
 
-  switchPlayer = modify $ updatePlayer Player.switch
+  updatePlayer = modify . updatePlayer'
 
-  setCell position = do
-    p <- player
-    modify $ updateBoard $ Board.setCell (cell p) position
+  updateBoard = modify . updateBoard'
 
-updatePlayer :: (Player -> Player) -> TheState -> TheState
-updatePlayer update s@TheState{thePlayer=p} = s { thePlayer = update p }
+updatePlayer' :: (Player -> Player) -> TheState -> TheState
+updatePlayer' update s@TheState{thePlayer=p} = s { thePlayer = update p }
 
-updateBoard :: (Board -> Board) -> TheState -> TheState
-updateBoard update s@TheState{theBoard=b} = s { theBoard = update b }
-
-cell :: Player -> Cell
-cell Naughts = Naught
-cell Crosses = Cross
+updateBoard' :: (Board -> Board) -> TheState -> TheState
+updateBoard' update s@TheState{theBoard=b} = s { theBoard = update b }
 
 instance MonadIO m => UI (TerminalGame m) where
-  gameOverScreen state = do
+  gameOverScreen result = do
     b <- Game.board
     drawBoard b
     putStr "TerminalGame over: "
-    putStrLn (tshow state)
+    putStrLn (tshow result)
 
   turnScreen = do
     b <- Game.board
