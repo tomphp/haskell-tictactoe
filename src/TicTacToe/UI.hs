@@ -1,6 +1,6 @@
 module TicTacToe.UI where
 
-import TicTacToe.Actions (GameState)
+import TicTacToe.Game (GameState)
 
 class Monad m => UI m where
   turnScreen :: m ()

@@ -1,63 +1,48 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+module TicTacToe.Game
+  ( Game(..)
+  , GameState(..)
+  , gameIsRunning
+  , state
+  ) where
 
-module TicTacToe.Game (run) where 
+import           TicTacToe.Board  (Board, Cell(..))
+import qualified TicTacToe.Board  as Board
+import           TicTacToe.Player (Player(..))
 
-import Control.Error.Safe (readZ)
-import Control.Monad.Loops (untilJust)
-import Control.Monad.State.Strict (MonadState, StateT, evalStateT, get, modify)
+class Monad m => Game m where
+  player       :: m Player
+  board        :: m Board
+  switchPlayer :: m ()
+  setCell      :: Int -> m ()
 
-import           TicTacToe.Actions   (Actions(..))
-import qualified TicTacToe.Actions   as Actions
-import           TicTacToe.Board     (Board, Cell(..))
-import qualified TicTacToe.Board     as Board
-import           TicTacToe.Player    (Player(..))
-import qualified TicTacToe.Player    as Player
-import           TicTacToe.State     (TheState)
-import qualified TicTacToe.State     as State
-import           TicTacToe.UI        (UI)
-import qualified TicTacToe.UI        as UI
+state :: Game m => m GameState
+state = stateFromBoard <$> board
 
-newtype Game m a = Game { runGame :: StateT TheState m a }
-  deriving (Functor, Applicative, Monad, MonadIO, MonadState TheState)
+gameIsRunning :: Game m => m Bool
+gameIsRunning = (== InPlay) <$> state
 
-run :: Monad m => Game m a -> TheState -> m a
-run game = evalStateT (runGame game)
+data GameState = InPlay | Draw | Winner Player deriving (Eq)
 
-instance Monad m => Actions (Game m) where
-  player = State.player <$> get
+instance Show GameState where
+  show InPlay          = "TerminalGame is in play"
+  show Draw            = "Draw"
+  show (Winner p) = show p <> " win"
 
-  board = State.board <$> get
+stateFromBoard :: Board -> GameState
+stateFromBoard b = case winnerFromBoard b of
+  Just p  -> Winner p
+  Nothing -> if Empty `elem` Board.cells b then InPlay else Draw
 
-  switchPlayer = modify $ State.updatePlayer Player.switch
+winnerFromBoard :: Board -> Maybe Player
+winnerFromBoard = foldr combineWinner Nothing . lineResults
+  where combineWinner Nothing line = line
+        combineWinner carry   _    = carry
 
-  setCell position = do
-    p <- player
-    modify $ State.updateBoard $ Board.setCell (cell p) position
+lineResults :: Board -> [Maybe Player]
+lineResults = map lineWinner . Board.lines
 
-instance MonadIO m => UI (Game m) where
-  gameOverScreen state = do
-    b <- Actions.board
-    drawBoard b
-    putStr "Game over: "
-    putStrLn (tshow state)
-
-  turnScreen = do
-    b <- Actions.board
-    p <- player
-    drawBoard b
-    putStr (tshow p)
-    putStr ", "
-    putStrLn "choose cell: "
-
-  getPositionInput =
-    untilJust $ do
-      pos <- readZ . unpack <$> getLine
-      when (isNothing pos) $ putStrLn "Try again..."
-      return $ pos
-
-cell :: Player -> Cell
-cell Naughts = Naught
-cell Crosses = Cross
-
-drawBoard :: MonadIO m => Board -> m ()
-drawBoard = putStrLn . tshow
+lineWinner :: [Cell] -> Maybe Player
+lineWinner line = case line of
+  [Cross, Cross, Cross]    -> Just Crosses
+  [Naught, Naught, Naught] -> Just Naughts
+  _                        -> Nothing

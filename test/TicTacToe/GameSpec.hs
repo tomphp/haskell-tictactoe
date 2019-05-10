@@ -1,17 +1,17 @@
-module TicTacToe.ActionsSpec where
+module TicTacToe.GameSpec where
 
 import Test.Hspec
 
-import TicTacToe.Actions (GameState(..))
+import TicTacToe.Game (GameState(..))
 import TicTacToe.Player  (Player(..))
 
 spec :: Spec
 spec = do
-  describe "TicTacToe.Actions" $ do
+  describe "TicTacToe.Game" $ do
     describe "GameState" $ do
       describe "show" $ do
         it "returns a string" $ do
-          show InPlay `shouldBe` "Game is in play"
+          show InPlay `shouldBe` "TerminalGame is in play"
           show Draw `shouldBe` "Draw"
           show (Winner Crosses) `shouldBe` "Crosses win"
           show (Winner Naughts) `shouldBe` "Naughts win"
