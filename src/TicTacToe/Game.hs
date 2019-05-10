@@ -55,7 +55,7 @@ instance MonadIO m => UI (Game m) where
     untilJust $ do
       pos <- readZ . unpack <$> getLine
       when (isNothing pos) $ putStrLn "Try again..."
-      return $ pred <$> pos
+      return $ pos
 
 cell :: Player -> Cell
 cell Naughts = Naught
