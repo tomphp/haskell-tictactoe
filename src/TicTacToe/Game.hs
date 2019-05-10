@@ -1,13 +1,30 @@
 module TicTacToe.Game
   ( Game(..)
   , GameState(..)
-  , gameIsRunning
+  , UI(..)
+  , main
   , state
   ) where
+
+import Control.Monad.Loops (whileM_)
 
 import           TicTacToe.Board  (Board, Cell(..))
 import qualified TicTacToe.Board  as Board
 import           TicTacToe.Player (Player(..))
+
+
+main :: (Game m, UI m, Monad m) => m ()
+main = do
+  whileM_ isInPlay playTurn
+  gameOverScreen =<< state
+  where isInPlay = (== InPlay) <$> state
+
+playTurn :: (Game m, UI m) => m ()
+playTurn = do
+  turnScreen
+  position <- getPositionInput
+  setCell position
+  switchPlayer
 
 class Monad m => Game m where
   player       :: m Player
@@ -15,11 +32,13 @@ class Monad m => Game m where
   switchPlayer :: m ()
   setCell      :: Int -> m ()
 
+class Monad m => UI m where
+  turnScreen :: m ()
+  gameOverScreen :: GameState -> m ()
+  getPositionInput :: m Int
+
 state :: Game m => m GameState
 state = stateFromBoard <$> board
-
-gameIsRunning :: Game m => m Bool
-gameIsRunning = (== InPlay) <$> state
 
 data GameState = InPlay | Draw | Winner Player deriving (Eq)
 
@@ -42,7 +61,6 @@ lineResults :: Board -> [Maybe Player]
 lineResults = map lineWinner . Board.lines
 
 lineWinner :: [Cell] -> Maybe Player
-lineWinner line = case line of
-  [Cross, Cross, Cross]    -> Just Crosses
-  [Naught, Naught, Naught] -> Just Naughts
-  _                        -> Nothing
+lineWinner [Cross, Cross, Cross]    = Just Crosses
+lineWinner [Naught, Naught, Naught] = Just Naughts
+lineWinner _                        = Nothing

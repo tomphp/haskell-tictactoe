@@ -38,19 +38,21 @@ column :: Int -> Board -> Maybe [Cell]
 column colNum board = columns board `atZ` pred colNum
 
 columns :: Board -> [[Cell]]
-columns (Board cs) = case transformElements indexes cs of
-                       Just r  -> chunksOf 3 r
-                       Nothing -> error "should never ever happen"
+columns = transformedLines indexes
   where indexes = [0, 3, 6, 1, 4, 7, 2, 5, 8]
 
 diagonal :: Int -> Board -> Maybe [Cell]
 diagonal colNum board = diagonals board `atZ` pred colNum
 
 diagonals :: Board -> [[Cell]]
-diagonals (Board cs) = case transformElements indexes cs of
-                         Just r  -> chunksOf 3 r
-                         Nothing -> error "should never ever happen"
+diagonals = transformedLines indexes
   where indexes = [0, 4, 8, 2, 4, 6]
+
+transformedLines :: [Int] -> Board -> [[Cell]]
+transformedLines indexes (Board cs) =
+  case transformElements indexes cs of
+    Just r  -> chunksOf 3 r
+    Nothing -> error "should never ever happen"
 
 transformElements :: [Int] -> [a] -> Maybe [a]
 transformElements indexes xs = mapM (atZ xs) indexes

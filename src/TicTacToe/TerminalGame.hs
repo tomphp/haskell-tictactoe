@@ -6,33 +6,46 @@ import Control.Error.Safe (readZ)
 import Control.Monad.Loops (untilJust)
 import Control.Monad.State.Strict (MonadState, StateT, evalStateT, get, modify)
 
-import           TicTacToe.Game      (Game(..))
+import           TicTacToe.Game      (Game(..), UI(..))
 import qualified TicTacToe.Game      as Game
 import           TicTacToe.Board     (Board, Cell(..))
 import qualified TicTacToe.Board     as Board
 import           TicTacToe.Player    (Player(..))
 import qualified TicTacToe.Player    as Player
-import           TicTacToe.State     (TheState)
-import qualified TicTacToe.State     as State
-import           TicTacToe.UI        (UI)
-import qualified TicTacToe.UI        as UI
 
 newtype TerminalGame m a = TerminalGame { runTerminalGame :: StateT TheState m a }
   deriving (Functor, Applicative, Monad, MonadIO, MonadState TheState)
 
-run :: Monad m => TerminalGame m a -> TheState -> m a
-run game = evalStateT (runTerminalGame game)
+data TheState = TheState { theBoard :: Board
+                         , thePlayer :: Player
+                         }
+
+run :: Monad m => TerminalGame m a -> m a
+run game = evalStateT (runTerminalGame game) newState
+
+newState :: TheState
+newState = TheState { theBoard = Board.new, thePlayer = Crosses }
 
 instance Monad m => Game (TerminalGame m) where
-  player = State.player <$> get
+  player = thePlayer <$> get
 
-  board = State.board <$> get
+  board = theBoard <$> get
 
-  switchPlayer = modify $ State.updatePlayer Player.switch
+  switchPlayer = modify $ updatePlayer Player.switch
 
   setCell position = do
     p <- player
-    modify $ State.updateBoard $ Board.setCell (cell p) position
+    modify $ updateBoard $ Board.setCell (cell p) position
+
+updatePlayer :: (Player -> Player) -> TheState -> TheState
+updatePlayer update s@TheState{thePlayer=p} = s { thePlayer = update p }
+
+updateBoard :: (Board -> Board) -> TheState -> TheState
+updateBoard update s@TheState{theBoard=b} = s { theBoard = update b }
+
+cell :: Player -> Cell
+cell Naughts = Naught
+cell Crosses = Cross
 
 instance MonadIO m => UI (TerminalGame m) where
   gameOverScreen state = do
@@ -54,10 +67,6 @@ instance MonadIO m => UI (TerminalGame m) where
       pos <- readZ . unpack <$> getLine
       when (isNothing pos) $ putStrLn "Try again..."
       return $ pos
-
-cell :: Player -> Cell
-cell Naughts = Naught
-cell Crosses = Cross
 
 drawBoard :: MonadIO m => Board -> m ()
 drawBoard = putStrLn . tshow
