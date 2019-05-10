@@ -10,7 +10,6 @@ import           TicTacToe.Actions   (Actions(..))
 import qualified TicTacToe.Actions   as Actions
 import           TicTacToe.Board     (Board, Cell(..))
 import qualified TicTacToe.Board     as Board
-import qualified TicTacToe.GameLogic as GameLogic
 import           TicTacToe.Player    (Player(..))
 import qualified TicTacToe.Player    as Player
 import           TicTacToe.State     (TheState)
@@ -36,9 +35,8 @@ instance Monad m => Actions (Game m) where
     modify $ State.updateBoard $ Board.setCell (cell p) position
 
 instance MonadIO m => UI (Game m) where
-  gameOverScreen = do
+  gameOverScreen state = do
     b <- Actions.board
-    let state = GameLogic.getGameState b
     drawBoard b
     putStr "Game over: "
     putStrLn (tshow state)

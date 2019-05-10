@@ -17,7 +17,8 @@ run = do
 gameLoop :: (Actions m, UI m, Monad m) => m ()
 gameLoop = do
   whileM_ Actions.gameIsRunning playTurn
-  UI.gameOverScreen
+
+  UI.gameOverScreen =<< Actions.state
 
 playTurn :: (Actions m, UI m) => m ()
 playTurn = do
