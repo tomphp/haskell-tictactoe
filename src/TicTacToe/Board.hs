@@ -22,10 +22,11 @@ import Data.List.Split (chunksOf)
 
 data Cell = Empty | Naught | Cross deriving (Eq, Show)
 
-data BoardError = CellDoesNotExist | CellIsNotEmpty deriving (Eq, Show)
+data BoardError = CellDoesNotExist | CellIsNotEmpty deriving (Eq)
 
--- "Attempting to set a cell which does not exist"
--- "Attempting to set a cell which is not empty"
+instance Show BoardError where
+  show CellDoesNotExist =  "Attempting to set a cell which does not exist"
+  show CellIsNotEmpty   =  "Attempting to set a cell which is not empty"
 
 newtype Board = Board [Cell] deriving (Eq)
 
