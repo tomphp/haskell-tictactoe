@@ -4,46 +4,60 @@ import Control.Error.Safe (atZ)
 import Data.List (nub)
 import Test.Hspec
 
-import           TicTacToe.Board (Cell(..))
+import           TicTacToe.Board (BoardError(..), Cell(..))
 import qualified TicTacToe.Board as Board
 
 spec :: Spec
 spec = do
   describe "TicTacToe.Board" $ do
     describe "new" $ do
-      it "returns a new board contains 9 cells" $ do
-        length (Board.cells Board.new) `shouldBe` 9
-
-      it "sets all cells to Empty" $ do
-        nub (Board.cells Board.new) `shouldBe` [Empty]
+      it "returns a new board contains 9 empty cells" $ do
+        Board.cells Board.new `shouldBe` replicate 9 Empty
 
     describe "setCell" $ do
       let cellNum = 5
       let cellIndex = pred cellNum
-      let board = Board.setCell Cross cellNum Board.new
+
+      let (Right board) = Board.setCell Cross cellNum Board.new
+      let cells = Board.cells board
 
       it "sets a cell on the board" $ do
-        Board.cells board `atZ` cellIndex `shouldBe` Just Cross
+         cells `atZ` cellIndex `shouldBe` Just Cross
 
       it "doesn't modify other cells" $ do
-        nub (take (pred cellIndex) (Board.cells board)) `shouldBe` [Empty]
-        nub (drop (succ cellIndex) (Board.cells board)) `shouldBe` [Empty]
+        nub (take (pred cellIndex) cells) `shouldBe` [Empty]
+        nub (drop (succ cellIndex) cells) `shouldBe` [Empty]
 
-      -- it "throws if the cell is already set" $ do
-      --   (setCell board Naught cellNum) `shouldThrow` anyErrorCall
+      it "returns CellDoesNotExist when trying to set an invalid cell" $ do
+        Board.setCell Cross 0 board `shouldBe` Left CellDoesNotExist
+
+      it "returns CellIsNotEmpty when trying to set an invalid cell" $ do
+        Board.setCell Cross cellNum board `shouldBe` Left CellIsNotEmpty
 
     context "for board in play" $ do
-      let board = Board.setCell Cross 1  -- row 1
-                $ Board.setCell Naught 2
-                $ Board.setCell Empty 3
-                $ Board.setCell Naught 4 -- row 2
-                $ Board.setCell Naught 5
-                $ Board.setCell Cross 6
-                $ Board.setCell Empty 7 -- row 3
-                $ Board.setCell Empty 8
-                $ Board.setCell Cross 9
-                $ Board.new
+      let (Right board) = ( Board.setCell Cross 1  -- row 1
+                >=> Board.setCell Naught 2
+                >=> Board.setCell Empty 3
+                >=> Board.setCell Naught 4 -- row 2
+                >=> Board.setCell Naught 5
+                >=> Board.setCell Cross 6
+                >=> Board.setCell Empty 7 -- row 3
+                >=> Board.setCell Empty 8
+                >=> Board.setCell Cross 9
+                ) Board.new
 
+
+      describe "lines" $ do
+        it "returns lines" $ do
+          Board.lines board `shouldBe` [ [ Cross, Naught, Empty ]
+                                       , [ Naught, Naught, Cross ]
+                                       , [ Empty, Empty, Cross ]
+                                       , [ Cross, Naught, Empty ]
+                                       , [ Naught, Naught, Empty ]
+                                       , [ Empty, Cross, Cross ]
+                                       , [ Cross, Naught, Cross ]
+                                       , [ Empty, Naught, Empty ]
+                                       ]
       describe "row" $ do
         it "returns the row" $ do
           Board.row 1 board `shouldBe` Just [ Cross, Naught, Empty ]
@@ -72,18 +86,6 @@ spec = do
         it "returns Nothing for a bad diagonal number" $ do
           Board.diagonal 0 board `shouldBe` Nothing
           Board.diagonal 3 board `shouldBe` Nothing
-
-      describe "lines" $ do
-        it "returns lines" $ do
-          Board.lines board `shouldBe` [ [ Cross, Naught, Empty ]
-                                       , [ Naught, Naught, Cross ]
-                                       , [ Empty, Empty, Cross ]
-                                       , [ Cross, Naught, Empty ]
-                                       , [ Naught, Naught, Empty ]
-                                       , [ Empty, Cross, Cross ]
-                                       , [ Cross, Naught, Cross ]
-                                       , [ Empty, Naught, Empty ]
-                                       ]
 
     describe "show" $ do
       it "shows an empty board" $

@@ -1,11 +1,13 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module TicTacToe.Game
   ( State(..)
   , Result(..)
   , UI(..)
   , main
-  , result
   ) where
 
+import Control.Monad.Except (catchError)
 import Control.Monad.Loops (whileM_)
 
 import           TicTacToe.Board  (Board, Cell(..))
@@ -46,9 +48,12 @@ switchPlayer = updatePlayer Player.switch
 setCell :: State m => Int -> m ()
 setCell position = do
   p <- player
-  updateBoard $ Board.setCell (cell p) position
+  updateBoard $ updater p
   where cell Naughts = Naught
         cell Crosses = Cross
+
+        updater p b = let (Right res) = Board.setCell (cell p) position b `catchError` (\_ -> error "ouch")
+                      in res
 
 data Result = InPlay | Draw | Winner Player deriving (Eq)
 

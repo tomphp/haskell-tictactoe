@@ -1,5 +1,8 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module TicTacToe.Board
   ( Board(..)
+  , BoardError(..)
   , Cell(..)
   , cells
   , column
@@ -12,15 +15,32 @@ module TicTacToe.Board
 
 import Prelude hiding (lines)
 
+import Control.Monad.Except (MonadError, throwError)
+
 import Control.Error.Safe (atZ)
 import Data.List.Split (chunksOf)
 
 data Cell = Empty | Naught | Cross deriving (Eq, Show)
 
-newtype Board = Board [Cell]
+data BoardError = CellDoesNotExist | CellIsNotEmpty deriving (Eq, Show)
+
+-- "Attempting to set a cell which does not exist"
+-- "Attempting to set a cell which is not empty"
+
+newtype Board = Board [Cell] deriving (Eq)
 
 new :: Board
 new = Board $ replicate 9 Empty
+
+setCell :: MonadError BoardError m => Cell -> Int -> Board -> m Board
+setCell cell position (Board cs) =
+  case currentValue of
+    Nothing    -> throwError CellDoesNotExist
+    Just Empty -> return $ Board newCells
+    _          -> throwError CellIsNotEmpty
+  where
+    newCells = take (pred position) cs ++ cell : drop position cs
+    currentValue = cs `atZ` pred position
 
 cells :: Board -> [Cell]
 cells (Board cs) = cs
@@ -56,15 +76,6 @@ transformedLines indexes (Board cs) =
 
 transformElements :: [Int] -> [a] -> Maybe [a]
 transformElements indexes xs = mapM (atZ xs) indexes
-
-setCell :: Cell -> Int -> Board -> Board
-setCell cell position (Board board) = 
-  case currentValue of
-    Nothing    -> error "Attempting to set a cell which does not exist"
-    Just Empty -> Board $ take (pred position) board ++ cell : drop position board
-    _          -> error "Attempting to set a cell which is not empty"
-  where
-    currentValue = board `atZ` pred position
 
 instance Show Board where
   show (Board board) = unpack rendered
