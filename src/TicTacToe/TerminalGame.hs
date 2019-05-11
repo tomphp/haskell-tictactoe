@@ -2,15 +2,14 @@
 
 module TicTacToe.TerminalGame (run) where
 
-import Control.Error.Safe (readZ)
-import Control.Monad.Loops (untilJust)
+import Control.Error.Safe         (readZ)
+import Control.Monad.Loops        (untilJust)
 import Control.Monad.State.Strict (MonadState, StateT, evalStateT, get, modify)
 
-import           TicTacToe.Game      (State(..), UI(..))
-import qualified TicTacToe.Game      as Game
-import           TicTacToe.Board     (Board)
-import qualified TicTacToe.Board     as Board
-import           TicTacToe.Player    (Player(..))
+import           TicTacToe.Game   (State(..), UI(..))
+import           TicTacToe.Board  (Board)
+import qualified TicTacToe.Board  as Board
+import           TicTacToe.Player (Player(..))
 
 newtype TerminalGame m a = TerminalGame { runTerminalGame :: StateT TheState m a }
   deriving (Functor, Applicative, Monad, MonadIO, MonadState TheState)
@@ -41,25 +40,12 @@ updateBoard' :: (Board -> Board) -> TheState -> TheState
 updateBoard' update s@TheState{theBoard=b} = s { theBoard = update b }
 
 instance MonadIO m => UI (TerminalGame m) where
-  gameOverScreen result = do
-    b <- Game.board
-    drawBoard b
-    putStr "TerminalGame over: "
-    putStrLn (tshow result)
+  displayMessage = putStrLn
 
-  turnScreen = do
-    b <- Game.board
-    p <- player
-    drawBoard b
-    putStr (tshow p)
-    putStr ", "
-    putStrLn "choose cell: "
+  displayBoard = putStrLn . tshow
 
   getPositionInput =
     untilJust $ do
       pos <- readZ . unpack <$> getLine
-      when (isNothing pos) $ putStrLn "Try again..."
-      return $ pos
-
-drawBoard :: MonadIO m => Board -> m ()
-drawBoard = putStrLn . tshow
+      when (isNothing pos) $ displayMessage "Try again..."
+      return pos

@@ -8,7 +8,9 @@ module TicTacToe.Game
   ) where
 
 import Control.Monad.Except (catchError)
-import Control.Monad.Loops (whileM_)
+import Control.Monad.Loops  (whileM_)
+
+import Fmt
 
 import           TicTacToe.Board  (Board, Cell(..))
 import qualified TicTacToe.Board  as Board
@@ -18,15 +20,29 @@ import qualified TicTacToe.Player as Player
 main :: (State m, UI m, Monad m) => m ()
 main = do
   whileM_ isInPlay playTurn
-  gameOverScreen =<< result
+  gameOverScreen 
   where isInPlay = (== InPlay) <$> result
 
 playTurn :: (State m, UI m) => m ()
 playTurn = do
   turnScreen
-  position <- getPositionInput
-  setCell position
+  p <- getPositionInput
+  setCell p
   switchPlayer
+
+turnScreen :: (State m, UI m) => m ()
+turnScreen = do
+  b <- board
+  displayBoard b
+  p <- player
+  displayMessage $ ""+|tshow p|+", "+|"choose cell:"
+
+gameOverScreen :: (State m, UI m) => m ()
+gameOverScreen = do
+  b <- board
+  displayBoard b
+  r <- result
+  displayMessage $ "Game over: "+|tshow r|+""
 
 class Monad m => State m where
   player       :: m Player
@@ -35,8 +51,8 @@ class Monad m => State m where
   updateBoard  :: (Board -> Board) -> m ()
 
 class Monad m => UI m where
-  turnScreen :: m ()
-  gameOverScreen :: Result -> m ()
+  displayMessage :: Text -> m ()
+  displayBoard :: Board -> m ()
   getPositionInput :: m Int
 
 result :: State m => m Result

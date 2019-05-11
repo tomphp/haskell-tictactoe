@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4eecdd4633dd43c63815f19c8d133b85e38864501080c1ca21091a6221c3cb1d
+-- hash: 995ac4a383bc6d842e495442721d80142f5e0aec7a520ef1ef9c38a7305c678a
 
 name:           haskell-tictactoe
 version:        0.1.0.0
@@ -39,6 +39,7 @@ library
       base-noprelude >=4.7 && <5
     , classy-prelude
     , errors
+    , fmt
     , monad-loops
     , mtl
     , split
@@ -56,6 +57,7 @@ executable haskell-tictactoe-exe
       base-noprelude >=4.7 && <5
     , classy-prelude
     , errors
+    , fmt
     , haskell-tictactoe
     , monad-loops
     , mtl
@@ -80,6 +82,7 @@ test-suite haskell-tictactoe-test
       base-noprelude >=4.7 && <5
     , classy-prelude
     , errors
+    , fmt
     , haskell-tictactoe
     , hspec
     , monad-loops
