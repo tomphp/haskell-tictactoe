@@ -36,8 +36,8 @@ new = Board $ replicate 9 Empty
 setCell :: MonadError BoardError m => Cell -> Int -> Board -> m Board
 setCell cell position (Board cs) =
   case currentValue of
-    Nothing    -> throwError CellDoesNotExist
     Just Empty -> return $ Board newCells
+    Nothing    -> throwError CellDoesNotExist
     _          -> throwError CellIsNotEmpty
   where
     newCells = take (pred position) cs ++ cell : drop position cs

@@ -1,4 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE RankNTypes #-}
 
 module TicTacToe.Game
   ( State(..)
@@ -7,12 +9,12 @@ module TicTacToe.Game
   , main
   ) where
 
-import Control.Monad.Except (catchError)
+import Control.Monad.Except (MonadError)
 import Control.Monad.Loops  (whileM_)
 
 import Fmt
 
-import           TicTacToe.Board  (Board, Cell(..))
+import           TicTacToe.Board  (Board, BoardError, Cell(..))
 import qualified TicTacToe.Board  as Board
 import           TicTacToe.Player (Player(..))
 import qualified TicTacToe.Player as Player
@@ -27,8 +29,12 @@ playTurn :: (State m, UI m) => m ()
 playTurn = do
   turnScreen
   p <- getPositionInput
-  setCell p
-  switchPlayer
+  res <- setCell p
+  case res of
+    Right () -> switchPlayer
+    Left e   -> do displayMessage $ tshow e
+                   displayMessage "Try again"
+                   playTurn
 
 turnScreen :: (State m, UI m) => m ()
 turnScreen = do
@@ -48,7 +54,9 @@ class Monad m => State m where
   player       :: m Player
   board        :: m Board
   updatePlayer :: (Player -> Player) -> m ()
-  updateBoard  :: (Board -> Board) -> m ()
+  updateBoard  :: MonadError BoardError res
+               => (forall r . MonadError BoardError r => Board -> r Board)
+               -> m (res ())
 
 class Monad m => UI m where
   displayMessage :: Text -> m ()
@@ -61,15 +69,12 @@ result = resultFromBoard <$> board
 switchPlayer :: State m => m ()
 switchPlayer = updatePlayer Player.switch
 
-setCell :: State m => Int -> m ()
+setCell :: MonadError BoardError res => State m => Int -> m (res ())
 setCell position = do
   p <- player
-  updateBoard $ updater p
+  updateBoard $ Board.setCell (cell p) position
   where cell Naughts = Naught
         cell Crosses = Cross
-
-        updater p b = let (Right res) = Board.setCell (cell p) position b `catchError` (\_ -> error "ouch")
-                      in res
 
 data Result = InPlay | Draw | Winner Player deriving (Eq)
 

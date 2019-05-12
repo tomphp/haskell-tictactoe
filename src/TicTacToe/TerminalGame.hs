@@ -1,8 +1,11 @@
+{-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE ScopedTypeVariables        #-}
 
 module TicTacToe.TerminalGame (run) where
 
 import Control.Error.Safe         (readZ)
+import Control.Monad.Except       (throwError)
 import Control.Monad.Loops        (untilJust)
 import Control.Monad.State.Strict (MonadState, StateT, evalStateT, get, modify)
 
@@ -31,13 +34,17 @@ instance Monad m => State (TerminalGame m) where
 
   updatePlayer = modify . updatePlayer'
 
-  updateBoard = modify . updateBoard'
+  updateBoard update = do
+    b <- board
+    case addBoardToState <$> update b of
+      Right m -> modify m >> return (return ())
+      Left err -> return $ throwError err
+
+addBoardToState :: Board -> TheState -> TheState
+addBoardToState b s = s { theBoard = b }
 
 updatePlayer' :: (Player -> Player) -> TheState -> TheState
 updatePlayer' update s@TheState{thePlayer=p} = s { thePlayer = update p }
-
-updateBoard' :: (Board -> Board) -> TheState -> TheState
-updateBoard' update s@TheState{theBoard=b} = s { theBoard = update b }
 
 instance MonadIO m => UI (TerminalGame m) where
   displayMessage = putStrLn
