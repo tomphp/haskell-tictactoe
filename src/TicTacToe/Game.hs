@@ -9,7 +9,7 @@ module TicTacToe.Game
   , main
   ) where
 
-import Control.Monad.Except (MonadError)
+import Control.Monad.Except (MonadError, catchError, throwError)
 import Control.Monad.Loops  (whileM_)
 
 import Fmt
@@ -54,9 +54,7 @@ class Monad m => State m where
   player       :: m Player
   board        :: m Board
   updatePlayer :: (Player -> Player) -> m ()
-  updateBoard  :: MonadError BoardError res
-               => (forall r . MonadError BoardError r => Board -> r Board)
-               -> m (res ())
+  updateBoard  :: (Board -> Board) -> m ()
 
 class Monad m => UI m where
   displayMessage :: Text -> m ()
@@ -72,15 +70,20 @@ switchPlayer = updatePlayer Player.switch
 setCell :: MonadError BoardError res => State m => Int -> m (res ())
 setCell position = do
   p <- player
-  updateBoard $ Board.setCell (cell p) position
+  b <- board
+  let (Right b') = Board.setCell (cell p) position b `catchError` throwError
+
+  updateBoard $ const b'
+  return $ return ()
+
   where cell Naughts = Naught
         cell Crosses = Cross
 
 data Result = InPlay | Draw | Winner Player deriving (Eq)
 
 instance Show Result where
-  show InPlay          = "TerminalGame is in play"
-  show Draw            = "Draw"
+  show InPlay     = "TerminalGame is in play"
+  show Draw       = "Draw"
   show (Winner p) = show p <> " win"
 
 resultFromBoard :: Board -> Result
