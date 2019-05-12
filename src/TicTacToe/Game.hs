@@ -9,7 +9,7 @@ module TicTacToe.Game
   , main
   ) where
 
-import Control.Monad.Except (MonadError, catchError, throwError)
+import Control.Monad.Except (MonadError, catchError, runExceptT)
 import Control.Monad.Loops  (whileM_)
 
 import Fmt
@@ -29,12 +29,10 @@ playTurn :: (State m, UI m) => m ()
 playTurn = do
   turnScreen
   p <- getPositionInput
-  res <- setCell p
-  case res of
-    Right () -> switchPlayer
-    Left e   -> do displayMessage $ tshow e
-                   displayMessage "Try again"
-                   playTurn
+  setCell p `catchError` (\e -> do displayMessage $ tshow e
+                                   displayMessage "Try again"
+                                   playTurn)
+  switchPlayer
 
 turnScreen :: (State m, UI m) => m ()
 turnScreen = do
@@ -67,14 +65,13 @@ result = resultFromBoard <$> board
 switchPlayer :: State m => m ()
 switchPlayer = updatePlayer Player.switch
 
-setCell :: MonadError BoardError res => State m => Int -> m (res ())
+setCell :: (MonadError BoardError m, State m) => Int -> m ()
 setCell position = do
   p <- player
   b <- board
-  let (Right b') = Board.setCell (cell p) position b `catchError` throwError
+  b' <- Board.setCell (cell p) position b
 
   updateBoard $ const b'
-  return $ return ()
 
   where cell Naughts = Naught
         cell Crosses = Cross
