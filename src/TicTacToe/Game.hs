@@ -9,7 +9,7 @@ module TicTacToe.Game
   , main
   ) where
 
-import Control.Monad.Except (MonadError, catchError, runExceptT)
+import Control.Monad.Except (MonadError, catchError)
 import Control.Monad.Loops  (whileM_)
 
 import Fmt
@@ -19,13 +19,13 @@ import qualified TicTacToe.Board  as Board
 import           TicTacToe.Player (Player(..))
 import qualified TicTacToe.Player as Player
 
-main :: (State m, UI m, Monad m) => m ()
+main :: (MonadError BoardError m, State m, UI m, Monad m) => m ()
 main = do
   whileM_ isInPlay playTurn
   gameOverScreen 
   where isInPlay = (== InPlay) <$> result
 
-playTurn :: (State m, UI m) => m ()
+playTurn :: (MonadError BoardError m, State m, UI m) => m ()
 playTurn = do
   turnScreen
   p <- getPositionInput
