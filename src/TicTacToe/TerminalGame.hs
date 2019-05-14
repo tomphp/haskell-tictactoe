@@ -8,12 +8,13 @@ import Control.Monad.Loops        (untilJust)
 import Control.Monad.State.Strict (MonadState, StateT, evalStateT, get, modify)
 
 import           TicTacToe.Game   (State(..), UI(..))
-import           TicTacToe.Board  (Board, BoardError)
+import           TicTacToe.Board  (Board)
 import qualified TicTacToe.Board  as Board
+import qualified TicTacToe.Game   as Game
 import           TicTacToe.Player (Player(..))
 
-newtype TerminalGame m a = TerminalGame { runTerminalGame :: StateT TheState (ExceptT BoardError m) a }
-  deriving (Functor, Applicative, Monad, MonadIO, MonadState TheState, MonadError BoardError)
+newtype TerminalGame m a = TerminalGame { runTerminalGame :: StateT TheState (ExceptT Game.Error m) a }
+  deriving (Functor, Applicative, Monad, MonadIO, MonadState TheState, MonadError Game.Error)
 
 data TheState = TheState { theBoard :: Board
                          , thePlayer :: Player

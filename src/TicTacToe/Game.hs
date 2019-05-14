@@ -3,36 +3,42 @@
 {-# LANGUAGE RankNTypes #-}
 
 module TicTacToe.Game
-  ( State(..)
+  ( Error
+  , State(..)
   , Result(..)
   , UI(..)
   , main
   ) where
 
-import Control.Monad.Except (MonadError, catchError)
+import Control.Monad.Except (MonadError, catchError, throwError)
 import Control.Monad.Loops  (whileM_)
 
 import Fmt
 
-import           TicTacToe.Board  (Board, BoardError, Cell(..))
+import           TicTacToe.Board  (Board, Cell(..))
 import qualified TicTacToe.Board  as Board
 import           TicTacToe.Player (Player(..))
 import qualified TicTacToe.Player as Player
 
-main :: (MonadError BoardError m, State m, UI m, Monad m) => m ()
+data Error = BoardError Board.Error deriving Show
+
+main :: (MonadError Error m, State m, UI m, Monad m) => m ()
 main = do
   whileM_ isInPlay playTurn
   gameOverScreen 
   where isInPlay = (== InPlay) <$> result
 
-playTurn :: (MonadError BoardError m, State m, UI m) => m ()
+playTurn :: (MonadError Error m, State m, UI m) => m ()
 playTurn = do
   turnScreen
   p <- getPositionInput
-  setCell p `catchError` (\e -> do displayMessage $ tshow e
-                                   displayMessage "Try again"
-                                   playTurn)
+  setCell p `catchError` badPositionHandler
   switchPlayer
+
+  where badPositionHandler (BoardError e) = do displayMessage $ tshow e
+                                               displayMessage "Try again"
+                                               playTurn
+
 
 turnScreen :: (State m, UI m) => m ()
 turnScreen = do
@@ -65,13 +71,14 @@ result = resultFromBoard <$> board
 switchPlayer :: State m => m ()
 switchPlayer = updatePlayer Player.switch
 
-setCell :: (MonadError BoardError m, State m) => Int -> m ()
+setCell :: (MonadError Error m, State m) => Int -> m ()
 setCell position = do
   p <- player
   b <- board
-  b' <- Board.setCell (cell p) position b
 
-  updateBoard $ const b'
+  case Board.setCell (cell p) position b of
+    Right b' -> updateBoard $ const b'
+    Left e   -> throwError $ BoardError e
 
   where cell Naughts = Naught
         cell Crosses = Cross

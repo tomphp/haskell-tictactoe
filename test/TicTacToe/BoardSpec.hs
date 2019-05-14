@@ -4,7 +4,7 @@ import Control.Error.Safe (atZ)
 import Data.List (nub)
 import Test.Hspec
 
-import           TicTacToe.Board (BoardError(..), Cell(..))
+import           TicTacToe.Board (Cell(..), Error(..))
 import qualified TicTacToe.Board as Board
 
 spec :: Spec
@@ -97,7 +97,7 @@ spec = do
                                            , "7 | 8 | 9"
                                            ]
                       
-    describe "BoardError" $ do
+    describe "Error" $ do
       describe "show" $ do
         it "is returns a message from CellDoesNotExist" $
           show CellDoesNotExist `shouldBe` "Attempting to set a cell which does not exist"

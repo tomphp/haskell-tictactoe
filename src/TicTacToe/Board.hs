@@ -2,7 +2,7 @@
 
 module TicTacToe.Board
   ( Board(..)
-  , BoardError(..)
+  , Error(..)
   , Cell(..)
   , cells
   , column
@@ -22,9 +22,9 @@ import Data.List.Split (chunksOf)
 
 data Cell = Empty | Naught | Cross deriving (Eq, Show)
 
-data BoardError = CellDoesNotExist | CellIsNotEmpty deriving (Eq)
+data Error = CellDoesNotExist | CellIsNotEmpty deriving (Eq)
 
-instance Show BoardError where
+instance Show Error where
   show CellDoesNotExist =  "Attempting to set a cell which does not exist"
   show CellIsNotEmpty   =  "Attempting to set a cell which is not empty"
 
@@ -33,7 +33,7 @@ newtype Board = Board [Cell] deriving (Eq)
 new :: Board
 new = Board $ replicate 9 Empty
 
-setCell :: MonadError BoardError m => Cell -> Int -> Board -> m Board
+setCell :: MonadError Error m => Cell -> Int -> Board -> m Board
 setCell cell position (Board cs) =
   case currentValue of
     Just Empty -> return $ Board newCells
