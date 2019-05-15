@@ -9,6 +9,7 @@ import Control.Monad.State.Strict (MonadState, StateT, evalStateT)
 
 import           TicTacToe.Game   (UI(..), State)
 import qualified TicTacToe.Game   as Game
+import qualified TicTacToe.State  as State
 
 newtype TerminalGame m a = TerminalGame { runTerminalGame :: StateT State (ExceptT Game.Error m) a }
   deriving ( Functor
@@ -24,7 +25,7 @@ run game = do r <- result
               case r of
                 Right v -> return v
                 Left _  -> error "Error happened"
-  where result = runExceptT $ evalStateT (runTerminalGame game) Game.newState
+  where result = runExceptT $ evalStateT (runTerminalGame game) State.new
 
 instance MonadIO m => UI (TerminalGame m) where
   displayMessage = putStrLn

@@ -1,7 +1,6 @@
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE RankNTypes          #-}
-{-# LANGUAGE TemplateHaskell     #-}
 
 module TicTacToe.Game
   ( Error
@@ -9,10 +8,9 @@ module TicTacToe.Game
   , UI(..)
   , State
   , game
-  , newState
   ) where
 
-import Control.Lens         ((.=), (%=), makeLenses, use)
+import Control.Lens         ((.=), (%=), use)
 import Control.Monad.State  (MonadState)
 import Control.Monad.Except (MonadError, catchError, throwError)
 import Control.Monad.Loops  (whileM_)
@@ -23,17 +21,8 @@ import           TicTacToe.Board  (Board, Cell(..))
 import qualified TicTacToe.Board  as Board
 import           TicTacToe.Player (Player(..))
 import qualified TicTacToe.Player as Player
-
--- State
-
-data State = State { _theBoard :: Board
-                   , _thePlayer :: Player
-                   }
-
-makeLenses ''State
-
-newState :: State
-newState = State { _theBoard = Board.new, _thePlayer = Crosses }
+import           TicTacToe.State  (State)
+import qualified TicTacToe.State  as State
 
 -- Error
 
@@ -61,31 +50,31 @@ playTurn = do
 
 turnScreen :: (MonadState State m, UI m) => m ()
 turnScreen = do
-  b <- use theBoard
+  b <- use State.board
   displayBoard b
-  p <- use thePlayer
+  p <- use State.player
   displayMessage $ ""+|tshow p|+", "+|"choose cell:"
 
 gameOverScreen :: (MonadState State m, UI m) => m ()
 gameOverScreen = do
-  b <- use theBoard
+  b <- use State.board
   displayBoard b
   r <- result
   displayMessage $ "Game over: "+|tshow r|+""
 
 result :: MonadState State m => m Result
-result = resultFromBoard <$> use theBoard
+result = resultFromBoard <$> use State.board
 
 switchPlayer :: MonadState State m => m ()
-switchPlayer = thePlayer %= Player.switch
+switchPlayer = State.player %= Player.switch
 
 setCell :: (MonadError Error m, MonadState State m) => Int -> m ()
 setCell position = do
-  p <- use thePlayer
-  b <- use theBoard
+  p <- use State.player
+  b <- use State.board
 
   case Board.setCell (cell p) position b of
-    Right b' -> theBoard .= b'
+    Right b' -> State.board .= b'
     Left e   -> throwError $ BoardError e
 
   where cell Naughts = Naught
