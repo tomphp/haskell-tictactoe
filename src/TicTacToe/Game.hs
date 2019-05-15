@@ -1,17 +1,19 @@
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE RankNTypes          #-}
+{-# LANGUAGE TemplateHaskell     #-}
 
 module TicTacToe.Game
   ( Error
   , Result(..)
   , UI(..)
   , State
-  , main
+  , game
   , newState
   ) where
 
-import Control.Monad.State  (MonadState, get, modify)
+import Control.Lens         ((.=), (%=), makeLenses, use)
+import Control.Monad.State  (MonadState)
 import Control.Monad.Except (MonadError, catchError, throwError)
 import Control.Monad.Loops  (whileM_)
 
@@ -24,30 +26,14 @@ import qualified TicTacToe.Player as Player
 
 -- State
 
-data State = State { theBoard :: Board
-                   , thePlayer :: Player
+data State = State { _theBoard :: Board
+                   , _thePlayer :: Player
                    }
 
+makeLenses ''State
+
 newState :: State
-newState = State { theBoard = Board.new, thePlayer = Crosses }
-
-player :: MonadState State m => m Player
-player = thePlayer <$> get
-
-board :: MonadState State m => m Board
-board = theBoard <$> get
-
-updatePlayer :: MonadState State m => (Player -> Player) -> m ()
-updatePlayer = modify . updatePlayer'
-
-updateBoard  :: MonadState State m => (Board -> Board) -> m ()
-updateBoard = modify . updateBoard'
-
-updatePlayer' :: (Player -> Player) -> State -> State
-updatePlayer' update s@State{thePlayer=p} = s { thePlayer = update p }
-
-updateBoard' :: (Board -> Board) -> State -> State
-updateBoard' update s@State{theBoard=b} = s { theBoard = update b }
+newState = State { _theBoard = Board.new, _thePlayer = Crosses }
 
 -- Error
 
@@ -55,8 +41,8 @@ data Error = BoardError Board.Error deriving Show
 
 -- Main
 
-main :: (MonadError Error m, MonadState State m, UI m, Monad m) => m ()
-main = do
+game :: (MonadError Error m, MonadState State m, UI m, Monad m) => m ()
+game = do
   whileM_ isInPlay playTurn
   gameOverScreen 
   where isInPlay = (== InPlay) <$> result
@@ -68,37 +54,38 @@ playTurn = do
   setCell p `catchError` badPositionHandler
   switchPlayer
 
-  where badPositionHandler (BoardError e) = do displayMessage $ tshow e
-                                               displayMessage "Try again"
-                                               playTurn
+  where badPositionHandler (BoardError e) =
+          do displayMessage $ tshow e
+             displayMessage "Try again"
+             playTurn
 
 turnScreen :: (MonadState State m, UI m) => m ()
 turnScreen = do
-  b <- board
+  b <- use theBoard
   displayBoard b
-  p <- player
+  p <- use thePlayer
   displayMessage $ ""+|tshow p|+", "+|"choose cell:"
 
 gameOverScreen :: (MonadState State m, UI m) => m ()
 gameOverScreen = do
-  b <- board
+  b <- use theBoard
   displayBoard b
   r <- result
   displayMessage $ "Game over: "+|tshow r|+""
 
 result :: MonadState State m => m Result
-result = resultFromBoard <$> board
+result = resultFromBoard <$> use theBoard
 
 switchPlayer :: MonadState State m => m ()
-switchPlayer = updatePlayer Player.switch
+switchPlayer = thePlayer %= Player.switch
 
 setCell :: (MonadError Error m, MonadState State m) => Int -> m ()
 setCell position = do
-  p <- player
-  b <- board
+  p <- use thePlayer
+  b <- use theBoard
 
   case Board.setCell (cell p) position b of
-    Right b' -> updateBoard $ const b'
+    Right b' -> theBoard .= b'
     Left e   -> throwError $ BoardError e
 
   where cell Naughts = Naught

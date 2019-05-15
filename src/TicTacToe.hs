@@ -6,7 +6,4 @@ import qualified TicTacToe.TerminalGame as TerminalGame
 run :: IO ()
 run = do
     putStrLn "Tic Tac Toe"
-    TerminalGame.run Game.main
-
-
-
+    TerminalGame.run Game.game

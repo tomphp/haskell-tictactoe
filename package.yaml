@@ -20,6 +20,7 @@ dependencies:
 - classy-prelude
 - errors
 - fmt
+- lens
 - mtl
 - monad-loops
 - split
