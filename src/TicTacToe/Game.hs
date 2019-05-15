@@ -4,12 +4,14 @@
 
 module TicTacToe.Game
   ( Error
-  , State(..)
   , Result(..)
   , UI(..)
+  , State
   , main
+  , newState
   ) where
 
+import Control.Monad.State  (MonadState, get, modify)
 import Control.Monad.Except (MonadError, catchError, throwError)
 import Control.Monad.Loops  (whileM_)
 
@@ -20,15 +22,46 @@ import qualified TicTacToe.Board  as Board
 import           TicTacToe.Player (Player(..))
 import qualified TicTacToe.Player as Player
 
+-- State
+
+data State = State { theBoard :: Board
+                   , thePlayer :: Player
+                   }
+
+newState :: State
+newState = State { theBoard = Board.new, thePlayer = Crosses }
+
+player :: MonadState State m => m Player
+player = thePlayer <$> get
+
+board :: MonadState State m => m Board
+board = theBoard <$> get
+
+updatePlayer :: MonadState State m => (Player -> Player) -> m ()
+updatePlayer = modify . updatePlayer'
+
+updateBoard  :: MonadState State m => (Board -> Board) -> m ()
+updateBoard = modify . updateBoard'
+
+updatePlayer' :: (Player -> Player) -> State -> State
+updatePlayer' update s@State{thePlayer=p} = s { thePlayer = update p }
+
+updateBoard' :: (Board -> Board) -> State -> State
+updateBoard' update s@State{theBoard=b} = s { theBoard = update b }
+
+-- Error
+
 data Error = BoardError Board.Error deriving Show
 
-main :: (MonadError Error m, State m, UI m, Monad m) => m ()
+-- Main
+
+main :: (MonadError Error m, MonadState State m, UI m, Monad m) => m ()
 main = do
   whileM_ isInPlay playTurn
   gameOverScreen 
   where isInPlay = (== InPlay) <$> result
 
-playTurn :: (MonadError Error m, State m, UI m) => m ()
+playTurn :: (MonadError Error m, MonadState State m, UI m) => m ()
 playTurn = do
   turnScreen
   p <- getPositionInput
@@ -39,39 +72,27 @@ playTurn = do
                                                displayMessage "Try again"
                                                playTurn
 
-
-turnScreen :: (State m, UI m) => m ()
+turnScreen :: (MonadState State m, UI m) => m ()
 turnScreen = do
   b <- board
   displayBoard b
   p <- player
   displayMessage $ ""+|tshow p|+", "+|"choose cell:"
 
-gameOverScreen :: (State m, UI m) => m ()
+gameOverScreen :: (MonadState State m, UI m) => m ()
 gameOverScreen = do
   b <- board
   displayBoard b
   r <- result
   displayMessage $ "Game over: "+|tshow r|+""
 
-class Monad m => State m where
-  player       :: m Player
-  board        :: m Board
-  updatePlayer :: (Player -> Player) -> m ()
-  updateBoard  :: (Board -> Board) -> m ()
-
-class Monad m => UI m where
-  displayMessage :: Text -> m ()
-  displayBoard :: Board -> m ()
-  getPositionInput :: m Int
-
-result :: State m => m Result
+result :: MonadState State m => m Result
 result = resultFromBoard <$> board
 
-switchPlayer :: State m => m ()
+switchPlayer :: MonadState State m => m ()
 switchPlayer = updatePlayer Player.switch
 
-setCell :: (MonadError Error m, State m) => Int -> m ()
+setCell :: (MonadError Error m, MonadState State m) => Int -> m ()
 setCell position = do
   p <- player
   b <- board
@@ -82,6 +103,15 @@ setCell position = do
 
   where cell Naughts = Naught
         cell Crosses = Cross
+
+-- UI
+
+class Monad m => UI m where
+  displayMessage :: Text -> m ()
+  displayBoard :: Board -> m ()
+  getPositionInput :: m Int
+
+-- Result
 
 data Result = InPlay | Draw | Winner Player deriving (Eq)
 
