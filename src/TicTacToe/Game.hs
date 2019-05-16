@@ -5,7 +5,6 @@
 module TicTacToe.Game
   ( Error
   , Result(..)
-  , UI(..)
   , State
   , game
   ) where
@@ -23,6 +22,8 @@ import           TicTacToe.Player (Player(..))
 import qualified TicTacToe.Player as Player
 import           TicTacToe.State  (State)
 import qualified TicTacToe.State  as State
+import           TicTacToe.UI     (UI)
+import qualified TicTacToe.UI     as UI
 
 -- Error
 
@@ -39,28 +40,28 @@ game = do
 playTurn :: (MonadError Error m, MonadState State m, UI m) => m ()
 playTurn = do
   turnScreen
-  p <- getPositionInput
+  p <- UI.getPositionInput
   setCell p `catchError` badPositionHandler
   switchPlayer
 
   where badPositionHandler (BoardError e) =
-          do displayMessage $ tshow e
-             displayMessage "Try again"
+          do UI.displayMessage $ tshow e
+             UI.displayMessage "Try again"
              playTurn
 
 turnScreen :: (MonadState State m, UI m) => m ()
 turnScreen = do
   b <- use State.board
-  displayBoard b
+  UI.displayBoard b
   p <- use State.player
-  displayMessage $ ""+|tshow p|+", "+|"choose cell:"
+  UI.displayMessage $ ""+|tshow p|+", "+|"choose cell:"
 
 gameOverScreen :: (MonadState State m, UI m) => m ()
 gameOverScreen = do
   b <- use State.board
-  displayBoard b
+  UI.displayBoard b
   r <- result
-  displayMessage $ "Game over: "+|tshow r|+""
+  UI.displayMessage $ "Game over: "+|tshow r|+""
 
 result :: MonadState State m => m Result
 result = resultFromBoard <$> use State.board
@@ -79,13 +80,6 @@ setCell position = do
 
   where cell Naughts = Naught
         cell Crosses = Cross
-
--- UI
-
-class Monad m => UI m where
-  displayMessage :: Text -> m ()
-  displayBoard :: Board -> m ()
-  getPositionInput :: m Int
 
 -- Result
 
