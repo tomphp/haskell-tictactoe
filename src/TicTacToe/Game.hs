@@ -16,20 +16,18 @@ import Control.Monad.Loops  (whileM_)
 
 import Fmt
 
-import           TicTacToe.Board  (Board, Cell(..))
+import           TicTacToe.Board  (Cell(..))
 import qualified TicTacToe.Board  as Board
 import           TicTacToe.Player (Player(..))
 import qualified TicTacToe.Player as Player
+import           TicTacToe.Result (Result(InPlay))
+import qualified TicTacToe.Result as Result
 import           TicTacToe.State  (State)
 import qualified TicTacToe.State  as State
 import           TicTacToe.UI     (UI)
 import qualified TicTacToe.UI     as UI
 
--- Error
-
 data Error = BoardError Board.Error deriving Show
-
--- Main
 
 game :: (MonadError Error m, MonadState State m, UI m, Monad m) => m ()
 game = do
@@ -64,7 +62,7 @@ gameOverScreen = do
   UI.displayMessage $ "Game over: "+|tshow r|+""
 
 result :: MonadState State m => m Result
-result = resultFromBoard <$> use State.board
+result = Result.fromBoard <$> use State.board
 
 switchPlayer :: MonadState State m => m ()
 switchPlayer = State.player %= Player.switch
@@ -80,30 +78,3 @@ setCell position = do
 
   where cell Naughts = Naught
         cell Crosses = Cross
-
--- Result
-
-data Result = InPlay | Draw | Winner Player deriving (Eq)
-
-instance Show Result where
-  show InPlay     = "TerminalGame is in play"
-  show Draw       = "Draw"
-  show (Winner p) = show p <> " win"
-
-resultFromBoard :: Board -> Result
-resultFromBoard b = case winnerFromBoard b of
-  Just p  -> Winner p
-  Nothing -> if Empty `elem` Board.cells b then InPlay else Draw
-
-winnerFromBoard :: Board -> Maybe Player
-winnerFromBoard = foldr combineWinner Nothing . lineResults
-  where combineWinner Nothing line = line
-        combineWinner carry   _    = carry
-
-lineResults :: Board -> [Maybe Player]
-lineResults = map lineWinner . Board.lines
-
-lineWinner :: [Cell] -> Maybe Player
-lineWinner [Cross, Cross, Cross]    = Just Crosses
-lineWinner [Naught, Naught, Naught] = Just Naughts
-lineWinner _                        = Nothing
