@@ -1,10 +1,5 @@
-{-# LANGUAGE FlexibleContexts    #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE RankNTypes          #-}
-
 module TicTacToe.Game
   ( Error
-  , Result(..)
   , State
   , game
   ) where

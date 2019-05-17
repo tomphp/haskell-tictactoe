@@ -26,7 +26,40 @@ dependencies:
 - split
 
 default-extensions:
+# - ApplicativeDo
+# - BangPatterns
+# - ConstraintKinds
+# - DataKinds
+# - DefaultSignatures
+# - DeriveFoldable
+- DeriveFunctor
+# - DeriveGeneric
+# - DeriveLift
+# - DeriveTraversable
+# - DerivingStrategies
+# - EmptyCase
+# - ExistentialQuantification
+- FlexibleContexts
+# - FlexibleInstances
+# - FunctionalDependencies
+# - GADTs
+- GeneralizedNewtypeDeriving
+# - InstanceSigs
+# - KindSignatures
+# - LambdaCase
+# - MultiParamTypeClasses
+# - MultiWayIf
+# - NamedFieldPuns
 - OverloadedStrings
+# - PatternSynonyms
+# - RankNTypes
+# - ScopedTypeVariables
+# - StandaloneDeriving
+# - TupleSections
+# - TypeApplications
+# - TypeFamilies
+# - TypeFamilyDependencies
+# - TypeOperators
 
 library:
   source-dirs: src
@@ -39,6 +72,11 @@ executables:
     # - -threaded
     - -rtsopts
     # - -with-rtsopts=-N
+    - -Wall
+    - -Wcompat
+    - -Wincomplete-record-updates
+    - -Wincomplete-uni-patterns
+    - -Wredundant-constraints
     dependencies:
     - haskell-tictactoe
     - warp

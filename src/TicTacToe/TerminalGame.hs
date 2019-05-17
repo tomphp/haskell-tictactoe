@@ -1,5 +1,3 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-
 module TicTacToe.TerminalGame (run) where
 
 import Control.Error.Safe         (readZ)

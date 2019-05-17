@@ -1,5 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
-
 module TicTacToe.Board
   ( Board(..)
   , Error(..)

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b351d921508b6cfd4fbc32c26cd094c0730cb4bc4b44456ce5b5432daee5c510
+-- hash: 1e2b10707fc3d3cba8eebeae6add77c77a81c8fdb9637f59b81c57bf64f5bab0
 
 name:           haskell-tictactoe
 version:        0.1.0.0
@@ -37,7 +37,7 @@ library
       Paths_haskell_tictactoe
   hs-source-dirs:
       src
-  default-extensions: OverloadedStrings
+  default-extensions: DeriveFunctor FlexibleContexts GeneralizedNewtypeDeriving OverloadedStrings
   build-depends:
       base-noprelude >=4.7 && <5
     , classy-prelude
@@ -55,8 +55,8 @@ executable haskell-tictactoe-exe
       Paths_haskell_tictactoe
   hs-source-dirs:
       app
-  default-extensions: OverloadedStrings
-  ghc-options: -rtsopts
+  default-extensions: DeriveFunctor FlexibleContexts GeneralizedNewtypeDeriving OverloadedStrings
+  ghc-options: -rtsopts -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
   build-depends:
       base-noprelude >=4.7 && <5
     , classy-prelude
@@ -78,10 +78,12 @@ test-suite haskell-tictactoe-test
       TicTacToe.BoardSpec
       TicTacToe.GameSpec
       TicTacToe.PlayerSpec
+      TicTacToe.ResultSpec
+      TicTacToe.StateSpec
       Paths_haskell_tictactoe
   hs-source-dirs:
       test
-  default-extensions: OverloadedStrings
+  default-extensions: DeriveFunctor FlexibleContexts GeneralizedNewtypeDeriving OverloadedStrings
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base-noprelude >=4.7 && <5

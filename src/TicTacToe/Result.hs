@@ -17,9 +17,7 @@ fromBoard b = case winnerFromBoard b of
   Nothing -> if Empty `elem` Board.cells b then InPlay else Draw
 
 winnerFromBoard :: Board -> Maybe Player
-winnerFromBoard = foldr combineWinner Nothing . lineResults
-  where combineWinner Nothing line = line
-        combineWinner carry   _    = carry
+winnerFromBoard = asum . lineResults
 
 lineResults :: Board -> [Maybe Player]
 lineResults = map lineWinner . Board.lines
