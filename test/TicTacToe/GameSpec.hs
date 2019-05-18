@@ -1,12 +1,29 @@
 module TicTacToe.GameSpec where
 
+import Control.Monad.Except (ExceptT)
+import Control.Monad.State (StateT)
+
 import Test.Hspec
+
+import           TicTacToe.State (State)
+import qualified TicTacToe.Game  as Game
+
+newtype TestGame m a = TestGame { runTestGame :: StateT State (ExceptT Game.Error m) a }
 
 spec :: Spec
 spec = do
   describe "TicTacToe.Game" $ do
-    it "something" $ do
-      pending
+    describe "game" $ do
+      it "something" $ do
+        pending
+
+    describe "playTurn" $ do
+      it "something" $ do
+        pending
+
+    describe "gameOverScreen" $ do
+      it "something" $ do
+        pending
 
     -- context "getGameState" $ do
     --   it "is in play if there are empty cells and no winning lines" $ do

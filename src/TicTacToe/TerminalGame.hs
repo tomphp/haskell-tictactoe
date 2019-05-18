@@ -20,8 +20,8 @@ newtype TerminalGame m a = TerminalGame { runTerminalGame :: StateT State (Excep
            )
 
 run :: Monad m => TerminalGame m a -> m a
-run game = do r <- result
-              case r of
+run game =
+  result >>= \case
                 Right v -> return v
                 Left _  -> error "Error happened"
   where result = runExceptT $ evalStateT (runTerminalGame game) State.new
