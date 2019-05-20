@@ -5,6 +5,7 @@ module TicTacToe.Board
   , cells
   , column
   , diagonal
+  , fromStr
   , lines
   , new
   , row
@@ -30,6 +31,12 @@ newtype Board = Board [Cell] deriving (Eq)
 
 new :: Board
 new = Board $ replicate 9 Empty
+
+fromStr :: String -> Board
+fromStr = Board . map charToCell
+  where charToCell 'O' = Naught
+        charToCell 'X' = Cross
+        charToCell _   = Empty
 
 setCell :: MonadError Error m => Cell -> Int -> Board -> m Board
 setCell cell position (Board cs) =

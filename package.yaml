@@ -47,13 +47,13 @@ default-extensions:
 # - InstanceSigs
 # - KindSignatures
 - LambdaCase
-# - MultiParamTypeClasses
+- MultiParamTypeClasses
 # - MultiWayIf
 # - NamedFieldPuns
 - OverloadedStrings
 # - PatternSynonyms
 # - RankNTypes
-# - ScopedTypeVariables
+- ScopedTypeVariables
 # - StandaloneDeriving
 # - TupleSections
 # - TypeApplications

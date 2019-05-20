@@ -96,6 +96,15 @@ spec = do
                                            , "---------\n"
                                            , "7 | 8 | 9"
                                            ]
+
+    describe "fromStr" $ do
+      it "creates a board from a string" $ do
+        let input = "XO O X XO"
+
+        Board.cells (Board.fromStr input) `shouldBe` [ Cross,  Naught, Empty
+                                                     , Naught, Empty,  Cross
+                                                     , Empty,  Cross,  Naught
+                                                     ]
                       
     describe "Error" $ do
       describe "show" $ do

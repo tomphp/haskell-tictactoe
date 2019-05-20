@@ -26,7 +26,7 @@ import qualified TicTacToe.UI     as UI
 
 data Error = BoardError Board.Error deriving Show
 
-game :: (MonadError Error m, MonadState State m, UI m, Monad m) => m ()
+game :: (MonadError Error m, MonadState State m, UI m) => m ()
 game = iterateUntil Result.isGameOver playTurn >>= gameOverScreen
 
 -- Play turn

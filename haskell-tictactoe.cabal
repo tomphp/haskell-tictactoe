@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a77a850950608bb8433c09c1d7eb96587dc64f55deff7310af9e2c65ade49b5d
+-- hash: f2a61d3817abaa72c791f6257421be53414d3892002b45895fee85baddf0b8e6
 
 name:           haskell-tictactoe
 version:        0.1.0.0
@@ -37,7 +37,7 @@ library
       Paths_haskell_tictactoe
   hs-source-dirs:
       src
-  default-extensions: DeriveFunctor FlexibleContexts GeneralizedNewtypeDeriving LambdaCase OverloadedStrings
+  default-extensions: DeriveFunctor FlexibleContexts GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses OverloadedStrings ScopedTypeVariables
   build-depends:
       base-noprelude >=4.7 && <5
     , classy-prelude
@@ -55,7 +55,7 @@ executable haskell-tictactoe-exe
       Paths_haskell_tictactoe
   hs-source-dirs:
       app
-  default-extensions: DeriveFunctor FlexibleContexts GeneralizedNewtypeDeriving LambdaCase OverloadedStrings
+  default-extensions: DeriveFunctor FlexibleContexts GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses OverloadedStrings ScopedTypeVariables
   ghc-options: -rtsopts -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
   build-depends:
       base-noprelude >=4.7 && <5
@@ -83,7 +83,7 @@ test-suite haskell-tictactoe-test
       Paths_haskell_tictactoe
   hs-source-dirs:
       test
-  default-extensions: DeriveFunctor FlexibleContexts GeneralizedNewtypeDeriving LambdaCase OverloadedStrings
+  default-extensions: DeriveFunctor FlexibleContexts GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses OverloadedStrings ScopedTypeVariables
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base-noprelude >=4.7 && <5
