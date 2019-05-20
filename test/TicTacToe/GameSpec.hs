@@ -112,6 +112,39 @@ spec = do
           it "sets the cell" $ \(Right (_, st, _)) -> do
             st^.state^.State.board `shouldBe` Board.fromStr "XO       "
 
+      before (runTestGame Game.playTurn $ newState Board.new Crosses [0, 1])
+        $ context "invalid cell number entered" $ do
+          it "does not finish the game" $ \(Right (result, _, _)) -> do
+            Result.isGameOver result `shouldBe` False
+
+          it "displays the board and requests an action" $ \(Right (_, _, outputs)) -> do
+            outputs `shouldBe` [ DisplayBoard Board.new
+                               , DisplayMessage "Crosses, choose cell:"
+                               , DisplayMessage "Attempting to set a cell which does not exist"
+                               , DisplayMessage "Try again"
+                               , DisplayBoard Board.new
+                               , DisplayMessage "Crosses, choose cell:"
+                               ]
+
+          it "switches player" $ \(Right (_, st, _)) -> do
+            st^.state^.State.player `shouldBe` Naughts
+
+          it "sets the cell" $ \(Right (_, st, _)) -> do
+            st^.state^.State.board `shouldBe` Board.fromStr "X        "
+
+      before (runTestGame Game.playTurn $ newState (Board.fromStr "XO XO    ") Crosses [7])
+        $ context "crosses win" $ do
+          it "does not finish the game" $ \(Right (result, _, _)) -> do
+            Result.isGameOver result `shouldBe` True
+
+          it "displays the board and requests an action" $ \(Right (_, _, outputs)) -> do
+            outputs `shouldBe` [ DisplayBoard (Board.fromStr "XO XO    ")
+                               , DisplayMessage "Crosses, choose cell:"
+                               ]
+
+          it "sets the cell" $ \(Right (_, st, _)) -> do
+            st^.state^.State.board `shouldBe` Board.fromStr "XO XO X  "
+
     describe "gameOverScreen" $ do
       it "something" $ do
         pending
