@@ -27,6 +27,6 @@ lineResults :: Board -> [Maybe Player]
 lineResults = map lineWinner . Board.lines
 
 lineWinner :: [Cell] -> Maybe Player
-lineWinner [Cross,  Cross,  Cross]  = Just Crosses
-lineWinner [Naught, Naught, Naught] = Just Naughts
-lineWinner _                        = Nothing
+lineWinner [X, X, X] = Just Crosses
+lineWinner [O, O, O] = Just Naughts
+lineWinner _         = Nothing

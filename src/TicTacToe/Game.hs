@@ -71,8 +71,8 @@ setCell position = do
     Right b' -> State.board .= b'
     Left e   -> throwError $ BoardError e
 
-  where cell Naughts = Naught
-        cell Crosses = Cross
+  where cell Naughts = O
+        cell Crosses = X
 
 -- Game Over
 

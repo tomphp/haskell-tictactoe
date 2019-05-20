@@ -19,7 +19,7 @@ import Control.Monad.Except (MonadError, throwError)
 import Control.Error.Safe (atZ)
 import Data.List.Split (chunksOf)
 
-data Cell = Empty | Naught | Cross deriving (Eq, Show)
+data Cell = Empty | O | X deriving (Eq, Show)
 
 data Error = CellDoesNotExist | CellIsNotEmpty deriving (Eq)
 
@@ -34,8 +34,8 @@ new = Board $ replicate 9 Empty
 
 fromStr :: String -> Board
 fromStr = Board . map charToCell
-  where charToCell 'O' = Naught
-        charToCell 'X' = Cross
+  where charToCell 'O' = O
+        charToCell 'X' = X
         charToCell _   = Empty
 
 setCell :: MonadError Error m => Cell -> Int -> Board -> m Board
@@ -93,6 +93,6 @@ instance Show Board where
       formatRow   = unwords . intersperse "|"
 
 cellToChar :: (Cell, Int) -> Text
-cellToChar (Naught, _)     = "O"
-cellToChar (Cross, _)      = "X"
+cellToChar (O, _)          = "O"
+cellToChar (X, _)          = "X"
 cellToChar (Empty, number) = tshow number
