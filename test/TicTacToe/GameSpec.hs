@@ -14,9 +14,9 @@ import Test.Hspec
 import           TicTacToe.Board  (Board)
 import qualified TicTacToe.Board  as Board
 import qualified TicTacToe.Game   as Game
-import           TicTacToe.Player (Player(Naughts))
+import           TicTacToe.Player (Player(Naughts, Crosses))
 import qualified TicTacToe.Result as Result
-import           TicTacToe.State  (State)
+import           TicTacToe.State  (State(..))
 import qualified TicTacToe.State  as State
 import           TicTacToe.UI     (UI(..))
 
@@ -46,8 +46,8 @@ instance Monad m => UI (TestGame m) where
   displayMessage msg = tell [DisplayMessage msg]
   displayBoard board = tell [DisplayBoard board]
   getPositionInput = do ins <- getInputs
-                        let (Just h) = headZ ins
-                        let (Just t) = tailZ ins
+                        let Just h = headZ ins
+                        let Just t = tailZ ins
                         putInputs t
                         return h
 
@@ -61,6 +61,11 @@ instance Monad m => MonadState State (TestGame m) where
   put s = TestGame $ state .= s
   get = TestGame $ use state
 
+newState :: Board -> Player -> Inputs -> TestState
+newState b p ins = TestState { _state = State { _board = b, _player = p }
+                             , _inputs = ins
+                             }
+
 -- Tests 
 
 spec :: Spec
@@ -71,7 +76,7 @@ spec = do
         pending
 
     describe "playTurn" $ do
-      before (runTestGame Game.playTurn (TestState State.new [1])) $ context "new game" $ do
+      before (runTestGame Game.playTurn $ newState Board.new Crosses [1]) $ context "new game" $ do
         it "does not finish the game" $ \(Right (result, _, _)) -> do
           Result.isGameOver result `shouldBe` False
 
@@ -85,6 +90,25 @@ spec = do
 
         it "sets the cell" $ \(Right (_, st, _)) -> do
           st^.state^.State.board `shouldBe` Board.fromStr "X        "
+
+      before (runTestGame Game.playTurn $ newState (Board.fromStr "X        ") Naughts [1, 2]) $ context "cross take" $ do
+        it "does not finish the game" $ \(Right (result, _, _)) -> do
+          Result.isGameOver result `shouldBe` False
+
+        it "displays the board and requests an action" $ \(Right (_, _, outputs)) -> do
+          outputs `shouldBe` [ DisplayBoard (Board.fromStr "X        ")
+                             , DisplayMessage "Naughts, choose cell:"
+                             , DisplayMessage "Attempting to set a cell which is not empty"
+                             , DisplayMessage "Try again"
+                             , DisplayBoard (Board.fromStr "X        ")
+                             , DisplayMessage "Naughts, choose cell:"
+                             ]
+
+        it "switches player" $ \(Right (_, st, _)) -> do
+          st^.state^.State.player `shouldBe` Crosses
+
+        it "sets the cell" $ \(Right (_, st, _)) -> do
+          st^.state^.State.board `shouldBe` Board.fromStr "XO       "
 
     describe "gameOverScreen" $ do
       it "something" $ do

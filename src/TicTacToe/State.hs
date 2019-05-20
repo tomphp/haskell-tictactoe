@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module TicTacToe.State (State, board, player, new) where
+module TicTacToe.State (State(..), board, player, new) where
 
 import Control.Lens (makeLenses)
 

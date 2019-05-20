@@ -33,11 +33,15 @@ game = iterateUntil Result.isGameOver playTurn >>= gameOverScreen
 
 playTurn :: (MonadError Error m, MonadState State m, UI m) => m Result
 playTurn = do
+  placeToken
+  switchPlayer
+  result
+
+placeToken :: (MonadError Error m, MonadState State m, UI m) => m ()
+placeToken = do
   turnScreen
   p <- UI.getPositionInput
   setCell p `catchError` badPositionHandler
-  switchPlayer
-  result
 
 result :: MonadState State m => m Result
 result = Result.fromBoard <$> use State.board
@@ -46,7 +50,7 @@ badPositionHandler :: (MonadError Error m, MonadState State m, UI m) => Error ->
 badPositionHandler (BoardError e) =
   do UI.displayMessage $ tshow e
      UI.displayMessage "Try again"
-     void playTurn
+     void placeToken
 
 turnScreen :: (MonadState State m, UI m) => m ()
 turnScreen = do
