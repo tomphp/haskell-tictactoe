@@ -76,39 +76,41 @@ spec = do
         pending
 
     describe "playTurn" $ do
-      before (runTestGame Game.playTurn $ newState Board.new Crosses [1]) $ context "new game" $ do
-        it "does not finish the game" $ \(Right (result, _, _)) -> do
-          Result.isGameOver result `shouldBe` False
+      before (runTestGame Game.playTurn $ newState Board.new Crosses [1])
+        $ context "new game" $ do
+          it "does not finish the game" $ \(Right (result, _, _)) -> do
+            Result.isGameOver result `shouldBe` False
 
-        it "displays the board and requests an action" $ \(Right (_, _, outputs)) -> do
-          outputs `shouldBe` [ DisplayBoard Board.new
-                             , DisplayMessage "Crosses, choose cell:"
-                             ]
+          it "displays the board and requests an action" $ \(Right (_, _, outputs)) -> do
+            outputs `shouldBe` [ DisplayBoard Board.new
+                               , DisplayMessage "Crosses, choose cell:"
+                               ]
 
-        it "switches player" $ \(Right (_, st, _)) -> do
-          st^.state^.State.player `shouldBe` Naughts
+          it "switches player" $ \(Right (_, st, _)) -> do
+            st^.state^.State.player `shouldBe` Naughts
 
-        it "sets the cell" $ \(Right (_, st, _)) -> do
-          st^.state^.State.board `shouldBe` Board.fromStr "X        "
+          it "sets the cell" $ \(Right (_, st, _)) -> do
+            st^.state^.State.board `shouldBe` Board.fromStr "X        "
 
-      before (runTestGame Game.playTurn $ newState (Board.fromStr "X        ") Naughts [1, 2]) $ context "cross take" $ do
-        it "does not finish the game" $ \(Right (result, _, _)) -> do
-          Result.isGameOver result `shouldBe` False
+      before (runTestGame Game.playTurn $ newState (Board.fromStr "X        ") Naughts [1, 2])
+        $ context "cross take" $ do
+          it "does not finish the game" $ \(Right (result, _, _)) -> do
+            Result.isGameOver result `shouldBe` False
 
-        it "displays the board and requests an action" $ \(Right (_, _, outputs)) -> do
-          outputs `shouldBe` [ DisplayBoard (Board.fromStr "X        ")
-                             , DisplayMessage "Naughts, choose cell:"
-                             , DisplayMessage "Attempting to set a cell which is not empty"
-                             , DisplayMessage "Try again"
-                             , DisplayBoard (Board.fromStr "X        ")
-                             , DisplayMessage "Naughts, choose cell:"
-                             ]
+          it "displays the board and requests an action" $ \(Right (_, _, outputs)) -> do
+            outputs `shouldBe` [ DisplayBoard (Board.fromStr "X        ")
+                               , DisplayMessage "Naughts, choose cell:"
+                               , DisplayMessage "Attempting to set a cell which is not empty"
+                               , DisplayMessage "Try again"
+                               , DisplayBoard (Board.fromStr "X        ")
+                               , DisplayMessage "Naughts, choose cell:"
+                               ]
 
-        it "switches player" $ \(Right (_, st, _)) -> do
-          st^.state^.State.player `shouldBe` Crosses
+          it "switches player" $ \(Right (_, st, _)) -> do
+            st^.state^.State.player `shouldBe` Crosses
 
-        it "sets the cell" $ \(Right (_, st, _)) -> do
-          st^.state^.State.board `shouldBe` Board.fromStr "XO       "
+          it "sets the cell" $ \(Right (_, st, _)) -> do
+            st^.state^.State.board `shouldBe` Board.fromStr "XO       "
 
     describe "gameOverScreen" $ do
       it "something" $ do
