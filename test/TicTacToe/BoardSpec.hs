@@ -97,14 +97,14 @@ spec = do
                                            , "7 | 8 | 9"
                                            ]
 
-    describe "fromStr" $ do
+    describe "fromCells" $ do
       it "creates a board from a string" $ do
-        let input = "XO O X XO"
+        let cells = [ X,     O,     Empty
+                    , O,     Empty, X
+                    , Empty, X,     O
+                    ]
 
-        Board.cells (Board.fromStr input) `shouldBe` [ X,     O,     Empty
-                                                     , O,     Empty, X
-                                                     , Empty, X,     O
-                                                     ]
+        Board.cells (Board.fromCells cells) `shouldBe` cells
                       
     describe "Error" $ do
       describe "show" $ do

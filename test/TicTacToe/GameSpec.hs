@@ -11,7 +11,7 @@ import Control.Monad.Writer (MonadWriter(tell))
 
 import Test.Hspec
 
-import           TicTacToe.Board  (Board)
+import           TicTacToe.Board  (Board, Cell(..))
 import qualified TicTacToe.Board  as Board
 import qualified TicTacToe.Game   as Game
 import           TicTacToe.Player (Player(Naughts, Crosses))
@@ -66,6 +66,12 @@ newState b p ins = TestState { _state = State { _board = b, _player = p }
                              , _inputs = ins
                              }
 
+toCells :: String -> [Cell]
+toCells = map charToCell
+  where charToCell 'X' = X
+        charToCell 'O' = O
+        charToCell _   = Empty
+
 -- Tests 
 
 spec :: Spec
@@ -90,19 +96,19 @@ spec = do
             st^.state^.State.player `shouldBe` Naughts
 
           it "sets the cell" $ \(Right (_, st, _)) -> do
-            st^.state^.State.board `shouldBe` Board.fromStr "X        "
+            st^.state^.State.board `shouldBe` Board.fromCells (toCells "X        ")
 
-      before (runTestGame Game.playTurn $ newState (Board.fromStr "X        ") Naughts [1, 2])
+      before (runTestGame Game.playTurn $ newState (Board.fromCells (toCells "X        ")) Naughts [1, 2])
         $ context "cross take" $ do
           it "does not finish the game" $ \(Right (result, _, _)) -> do
             Result.isGameOver result `shouldBe` False
 
           it "displays the board and requests an action" $ \(Right (_, _, outputs)) -> do
-            outputs `shouldBe` [ DisplayBoard (Board.fromStr "X        ")
+            outputs `shouldBe` [ DisplayBoard (Board.fromCells (toCells "X        "))
                                , DisplayMessage "Naughts, choose cell:"
                                , DisplayMessage "Attempting to set a cell which is not empty"
                                , DisplayMessage "Try again"
-                               , DisplayBoard (Board.fromStr "X        ")
+                               , DisplayBoard (Board.fromCells (toCells "X        "))
                                , DisplayMessage "Naughts, choose cell:"
                                ]
 
@@ -110,7 +116,7 @@ spec = do
             st^.state^.State.player `shouldBe` Crosses
 
           it "sets the cell" $ \(Right (_, st, _)) -> do
-            st^.state^.State.board `shouldBe` Board.fromStr "XO       "
+            st^.state^.State.board `shouldBe` Board.fromCells (toCells "XO       ")
 
       before (runTestGame Game.playTurn $ newState Board.new Crosses [0, 1])
         $ context "invalid cell number entered" $ do
@@ -130,20 +136,20 @@ spec = do
             st^.state^.State.player `shouldBe` Naughts
 
           it "sets the cell" $ \(Right (_, st, _)) -> do
-            st^.state^.State.board `shouldBe` Board.fromStr "X        "
+            st^.state^.State.board `shouldBe` Board.fromCells (toCells "X        ")
 
-      before (runTestGame Game.playTurn $ newState (Board.fromStr "XO XO    ") Crosses [7])
+      before (runTestGame Game.playTurn $ newState (Board.fromCells (toCells "XO XO    ")) Crosses [7])
         $ context "crosses win" $ do
           it "does not finish the game" $ \(Right (result, _, _)) -> do
             Result.isGameOver result `shouldBe` True
 
           it "displays the board and requests an action" $ \(Right (_, _, outputs)) -> do
-            outputs `shouldBe` [ DisplayBoard (Board.fromStr "XO XO    ")
+            outputs `shouldBe` [ DisplayBoard (Board.fromCells $ toCells "XO XO    ")
                                , DisplayMessage "Crosses, choose cell:"
                                ]
 
           it "sets the cell" $ \(Right (_, st, _)) -> do
-            st^.state^.State.board `shouldBe` Board.fromStr "XO XO X  "
+            st^.state^.State.board `shouldBe` Board.fromCells (toCells "XO XO X  ")
 
     describe "gameOverScreen" $ do
       it "something" $ do
