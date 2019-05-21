@@ -4,7 +4,10 @@ import Control.Error.Safe         (readZ)
 import Control.Monad.Except       (ExceptT, MonadError, runExceptT)
 import Control.Monad.Loops        (untilJust)
 import Control.Monad.State.Strict (MonadState, StateT, evalStateT)
+import Data.List.Split (chunksOf)
 
+import           TicTacToe.Board  (Cell(..))
+import qualified TicTacToe.Board  as Board
 import           TicTacToe.Game   (State)
 import qualified TicTacToe.Game   as Game
 import qualified TicTacToe.State  as State
@@ -29,10 +32,24 @@ run game =
 instance MonadIO m => UI (TerminalGame m) where
   displayMessage = putStrLn
 
-  displayBoard = putStrLn . tshow
+  displayBoard = putStrLn . Board.render boardRenderer
 
   getPositionInput =
     untilJust $ do
       pos <- readZ . unpack <$> getLine
       when (isNothing pos) $ displayMessage "Try again..."
       return pos
+
+boardRenderer :: [Cell] -> Text
+boardRenderer cs = rendered
+  where
+    rendered    = intercalate "\n---------\n" formatted
+    formatted   = map formatRow rs
+    rs          = chunksOf 3 parsedBoard
+    parsedBoard = zipWith (curry cellToChar) cs [1..9]
+    formatRow   = unwords . intersperse "|"
+
+cellToChar :: (Cell, Int) -> Text
+cellToChar (O, _)          = "O"
+cellToChar (X, _)          = "X"
+cellToChar (Empty, number) = tshow number

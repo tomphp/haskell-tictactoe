@@ -9,6 +9,7 @@ module TicTacToe.Board
   , lines
   , new
   , row
+  , render
   , setCell
   ) where
 
@@ -21,13 +22,9 @@ import Data.List.Split (chunksOf)
 
 data Cell = Empty | O | X deriving (Eq, Show)
 
-data Error = CellDoesNotExist | CellIsNotEmpty deriving (Eq)
+data Error = CellDoesNotExist | CellIsNotEmpty deriving (Eq, Show)
 
-instance Show Error where
-  show CellDoesNotExist =  "Attempting to set a cell which does not exist"
-  show CellIsNotEmpty   =  "Attempting to set a cell which is not empty"
-
-newtype Board = Board [Cell] deriving (Eq)
+newtype Board = Board [Cell] deriving (Eq, Show)
 
 new :: Board
 new = Board $ replicate 9 Empty
@@ -80,16 +77,5 @@ transformedLines indexes (Board cs) =
 transformElements :: [Int] -> [a] -> Maybe [a]
 transformElements indexes xs = mapM (atZ xs) indexes
 
-instance Show Board where
-  show (Board board) = unpack rendered
-    where
-      rendered    = intercalate "\n---------\n" formatted
-      formatted   = map formatRow rs
-      rs          = chunksOf 3 parsedBoard
-      parsedBoard = zipWith (curry cellToChar) board [1..9]
-      formatRow   = unwords . intersperse "|"
-
-cellToChar :: (Cell, Int) -> Text
-cellToChar (O, _)          = "O"
-cellToChar (X, _)          = "X"
-cellToChar (Empty, number) = tshow number
+render :: ([Cell] -> Text) -> Board -> Text
+render r = r . cells

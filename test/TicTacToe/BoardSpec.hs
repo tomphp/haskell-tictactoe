@@ -88,14 +88,16 @@ spec = do
             Board.diagonal 0 board `shouldBe` Nothing
             Board.diagonal 3 board `shouldBe` Nothing
 
-      describe "show" $ do
-        it "shows an empty board" $
-          show Board.new `shouldBe` concat [ "1 | 2 | 3\n"
-                                           , "---------\n"
-                                           , "4 | 5 | 6\n"
-                                           , "---------\n"
-                                           , "7 | 8 | 9"
-                                           ]
+      describe "render" $ do
+        it "converts a board to text" $ do
+          let board = Board.fromCells [ X, O, Empty, X, Empty, O, Empty, X, O ]
+
+          let r = fromString . map (\case
+                                      X     -> 'X'
+                                      O     -> 'O'
+                                      Empty -> 'E')
+
+          Board.render r board `shouldBe` "XOEXEOEXO"
 
     describe "fromCells" $ do
       it "creates a board from a string" $ do
@@ -105,11 +107,3 @@ spec = do
                     ]
 
         Board.cells (Board.fromCells cells) `shouldBe` cells
-                      
-    describe "Error" $ do
-      describe "show" $ do
-        it "is returns a message from CellDoesNotExist" $
-          show CellDoesNotExist `shouldBe` "Attempting to set a cell which does not exist"
-
-        it "is returns a message from CellIsNotEmpty" $
-          show CellIsNotEmpty `shouldBe` "Attempting to set a cell which is not empty"

@@ -17,7 +17,7 @@ import           TicTacToe.Board  (Cell(..))
 import qualified TicTacToe.Board  as Board
 import           TicTacToe.Player (Player(..))
 import qualified TicTacToe.Player as Player
-import           TicTacToe.Result (Result)
+import           TicTacToe.Result (Result(..))
 import qualified TicTacToe.Result as Result
 import           TicTacToe.State  (State)
 import qualified TicTacToe.State  as State
@@ -48,7 +48,7 @@ result = Result.fromBoard <$> use State.board
 
 badPositionHandler :: (MonadError Error m, MonadState State m, UI m) => Error -> m ()
 badPositionHandler (BoardError e) =
-  do UI.displayMessage $ tshow e
+  do UI.displayMessage $ errorMsg e
      UI.displayMessage "Try again"
      void placeToken
 
@@ -74,10 +74,19 @@ setCell position = do
   where cell Naughts = O
         cell Crosses = X
 
+errorMsg :: Board.Error -> Text
+errorMsg Board.CellDoesNotExist =  "Attempting to set a cell which does not exist"
+errorMsg Board.CellIsNotEmpty   =  "Attempting to set a cell which is not empty"
+
 -- Game Over
 
 gameOverScreen :: (MonadState State m, UI m) => Result -> m ()
 gameOverScreen r = do
   b <- use State.board
   UI.displayBoard b
-  UI.displayMessage $ "Game over: "+|tshow r|+""
+  UI.displayMessage $ "Game over: "+|resultMsg r|+""
+
+resultMsg :: Result -> Text
+resultMsg InPlay     = "TerminalGame is in play"
+resultMsg Draw       = "Draw"
+resultMsg (Winner p) = tshow p <> " win"
