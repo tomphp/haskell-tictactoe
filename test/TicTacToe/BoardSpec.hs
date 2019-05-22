@@ -11,15 +11,15 @@ spec :: Spec
 spec = do
   describe "TicTacToe.Board" $ do
     describe "Board" $ do
-      describe "new" $ do
-        it "returns a new board contains 9 empty cells" $ do
-          Board.cells Board.new `shouldBe` replicate 9 Empty
+      describe "empty" $ do
+        it "returns a empty board contains 9 empty cells" $ do
+          Board.cells Board.empty `shouldBe` replicate 9 Empty
 
       describe "setCell" $ do
         let cellNum = 5
         let cellIndex = pred cellNum
 
-        let (Right board) = Board.setCell X cellNum Board.new
+        let (Right board) = Board.setCell X cellNum Board.empty
         let cells = Board.cells board
 
         it "sets a cell on the board" $ do
@@ -45,7 +45,7 @@ spec = do
                   >=> Board.setCell Empty 7 -- row 3
                   >=> Board.setCell Empty 8
                   >=> Board.setCell X 9
-                  ) Board.new
+                  ) Board.empty
 
 
         describe "lines" $ do

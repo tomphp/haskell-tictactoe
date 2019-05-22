@@ -82,13 +82,13 @@ spec = do
         pending
 
     describe "playTurn" $ do
-      before (runTestGame Game.playTurn $ newState Board.new Crosses [1])
+      before (runTestGame Game.playTurn $ newState Board.empty Crosses [1])
         $ context "new game" $ do
           it "does not finish the game" $ \(Right (result, _, _)) -> do
             Result.isGameOver result `shouldBe` False
 
           it "displays the board and requests an action" $ \(Right (_, _, outputs)) -> do
-            outputs `shouldBe` [ DisplayBoard Board.new
+            outputs `shouldBe` [ DisplayBoard Board.empty
                                , DisplayMessage "Crosses, choose cell:"
                                ]
 
@@ -118,17 +118,17 @@ spec = do
           it "sets the cell" $ \(Right (_, st, _)) -> do
             st^.state^.State.board `shouldBe` Board.fromCells (toCells "XO       ")
 
-      before (runTestGame Game.playTurn $ newState Board.new Crosses [0, 1])
+      before (runTestGame Game.playTurn $ newState Board.empty Crosses [0, 1])
         $ context "invalid cell number entered" $ do
           it "does not finish the game" $ \(Right (result, _, _)) -> do
             Result.isGameOver result `shouldBe` False
 
           it "displays the board and requests an action" $ \(Right (_, _, outputs)) -> do
-            outputs `shouldBe` [ DisplayBoard Board.new
+            outputs `shouldBe` [ DisplayBoard Board.empty
                                , DisplayMessage "Crosses, choose cell:"
                                , DisplayMessage "Attempting to set a cell which does not exist"
                                , DisplayMessage "Try again"
-                               , DisplayBoard Board.new
+                               , DisplayBoard Board.empty
                                , DisplayMessage "Crosses, choose cell:"
                                ]
 

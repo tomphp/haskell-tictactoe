@@ -15,4 +15,4 @@ data State = State { _board :: Board
 makeLenses ''State
 
 new :: State
-new = State { _board = Board.new, _player = Crosses }
+new = State { _board = Board.empty, _player = Crosses }
