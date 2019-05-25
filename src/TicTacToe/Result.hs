@@ -3,26 +3,25 @@ module TicTacToe.Result (Result(..), fromBoard, isGameOver) where
 import           TicTacToe.Board  (Board, contains)
 import qualified TicTacToe.Board  as Board
 import qualified TicTacToe.Line   as Line
-import           TicTacToe.Player (Player(..))
 
-data Result = InPlay | Draw | Winner Player deriving (Eq)
+data Result p = InPlay | Draw | Winner p deriving (Eq)
 
-instance Show Result where
+instance Show a => Show (Result a) where
   show InPlay     = "TerminalGame is in play"
   show Draw       = "Draw"
   show (Winner p) = show p <> " win"
 
-fromBoard :: Board Player -> Result
+fromBoard :: Eq a => Board a -> Result a
 fromBoard b = case winnerFromBoard b of
   Just p  -> Winner p
   Nothing -> if b `contains` Nothing then InPlay else Draw
 
-isGameOver :: Result -> Bool
+isGameOver :: Result a -> Bool
 isGameOver InPlay = False
 isGameOver _      = True
 
-winnerFromBoard :: Board Player -> Maybe Player
+winnerFromBoard :: Eq a => Board a -> Maybe a
 winnerFromBoard = asum . lineResults
 
-lineResults :: Board Player -> [Maybe Player]
+lineResults :: Eq a => Board a -> [Maybe a]
 lineResults = map Line.winner . Board.lines

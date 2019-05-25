@@ -13,6 +13,7 @@ import Control.Monad.Loops  (iterateUntil)
 import Fmt
 
 import qualified TicTacToe.Board  as Board
+import           TicTacToe.Player (Player(..))
 import qualified TicTacToe.Player as Player
 import           TicTacToe.Result (Result(..))
 import qualified TicTacToe.Result as Result
@@ -28,7 +29,7 @@ game = iterateUntil Result.isGameOver playTurn >>= gameOverScreen
 
 -- Play turn
 
-playTurn :: (MonadError Error m, MonadState State m, UI m) => m Result
+playTurn :: (MonadError Error m, MonadState State m, UI m) => m (Result Player)
 playTurn = do
   placeToken
   switchPlayer
@@ -40,7 +41,7 @@ placeToken = do
   p <- UI.getPositionInput
   setCell p `catchError` badPositionHandler
 
-result :: MonadState State m => m Result
+result :: MonadState State m => m (Result Player)
 result = Result.fromBoard <$> use State.board
 
 badPositionHandler :: (MonadError Error m, MonadState State m, UI m) => Error -> m ()
@@ -74,13 +75,13 @@ errorMsg Board.CellIsNotEmpty   =  "Attempting to set a cell which is not empty"
 
 -- Game Over
 
-gameOverScreen :: (MonadState State m, UI m) => Result -> m ()
+gameOverScreen :: (MonadState State m, UI m) => Result Player -> m ()
 gameOverScreen r = do
   b <- use State.board
   UI.displayBoard b
   UI.displayMessage $ "Game over: "+|resultMsg r|+""
 
-resultMsg :: Result -> Text
+resultMsg :: Result Player -> Text
 resultMsg InPlay     = "TerminalGame is in play"
 resultMsg Draw       = "Draw"
 resultMsg (Winner p) = tshow p <> " win"

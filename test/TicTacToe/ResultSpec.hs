@@ -11,10 +11,10 @@ spec = do
     describe "Result" $ do
       describe "show" $ do
         it "returns a string" $ do
-          show InPlay `shouldBe` "TerminalGame is in play"
-          show Draw `shouldBe` "Draw"
-          show (Winner X) `shouldBe` "Crosses win"
-          show (Winner O) `shouldBe` "Naughts win"
+          show @(Result Player) InPlay     `shouldBe` "TerminalGame is in play"
+          show @(Result Player) Draw       `shouldBe` "Draw"
+          show                  (Winner X) `shouldBe` "Crosses win"
+          show                  (Winner O) `shouldBe` "Naughts win"
 
     -- context "fromBoard" $ do
     --   it "is in play if there are empty cells and no winning lines" $ do
