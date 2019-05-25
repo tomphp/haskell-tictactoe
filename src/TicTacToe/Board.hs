@@ -20,26 +20,26 @@ import Control.Monad.Except (MonadError, throwError)
 
 import Control.Error.Safe (atZ)
 
-data Cell = Empty | O | X deriving (Eq, Show)
+data Cell = O | X deriving (Eq, Show)
 
 data Error = CellDoesNotExist | CellIsNotEmpty deriving (Eq, Show)
 
-newtype Board = Board { getCell :: Coordinate -> Cell }
+newtype Board a = Board { getCell :: Coordinate -> Maybe a }
 
-instance Semigroup Board where
+instance Semigroup (Board a) where
   Board b1 <> Board b2 = Board $ combine b1 b2
-    where combine :: (Coordinate -> Cell) -> (Coordinate -> Cell) -> Coordinate -> Cell
+    where combine :: (Coordinate -> Maybe a) -> (Coordinate -> Maybe a) -> Coordinate -> Maybe a
           combine c1 c2 coord
-            | c1 coord /= Empty = c1 coord
+            | isJust (c1 coord) = c1 coord
             | otherwise         = c2 coord
 
-instance Monoid Board where
+instance Monoid (Board a) where
   mempty = empty
 
-instance Eq Board where
+instance Eq a => Eq (Board a) where
   b1 == b2 = cells b1 == cells b2
 
-instance Show Board where
+instance Show a => Show (Board a) where
   show b = "fromCells " ++ show (cells b)
 
 -- Row Col
@@ -59,58 +59,58 @@ indexToCoord i
   where r = (i - 1) `div` boardCols + 1
         c = (i - 1) `rem` boardCols + 1
 
-empty :: Board
-empty = Board $ const Empty
+empty :: Board a
+empty = Board $ const Nothing
 
-singleCell :: Cell -> Coordinate -> Board
-singleCell c coord1 =
-  Board $ \coord2 -> if coord1 == coord2 then c else Empty
+singleCell :: Maybe a -> Coordinate -> Board a
+singleCell Nothing _      = empty
+singleCell c       coord1 =
+  Board $ \coord2 -> if coord1 == coord2 then c else Nothing
 
-fromCells :: [Cell] -> Board
+fromCells :: [Maybe a] -> Board a
 fromCells cs = mconcat fns
   where
-    fns :: [Board]
     fns = zipWith singleCell cs allCoords
 
-setCell :: MonadError Error m => Cell -> Int -> Board -> m Board
+setCell :: MonadError Error m => a -> Int -> Board a -> m (Board a)
 setCell cell position (Board cs) =
   case indexToCoord position of
     Nothing    -> throwError CellDoesNotExist
-    Just coord -> if cs coord == Empty
-                   then return $ singleCell cell coord <> Board cs
+    Just coord -> if isNothing (cs coord)
+                   then return $ singleCell (Just cell) coord <> Board cs
                    else throwError CellIsNotEmpty
 
-contains :: Board -> Cell -> Bool
+contains :: Eq a => Board a -> Maybe a -> Bool
 contains b c = c `elem` cells b
 
-cells :: Board -> [Cell]
+cells :: Board a -> [Maybe a]
 cells (Board cs) = map cs allCoords
 
 allCoords :: [Coordinate]
 allCoords = [ Coordinate r c | r <- [1..boardCols], c <- [1..boardRows] ]
 
-lines :: Board -> [[Cell]]
+lines :: Board a -> [[Maybe a]]
 lines board = concat [ rows board, columns board, diagonals board ]
 
-row :: Int -> Board -> Maybe [Cell]
+row :: Int -> Board a -> Maybe [Maybe a]
 row rowNum board = rows board `atZ` pred rowNum
 
-rows :: Board -> [[Cell]]
+rows :: Board a -> [[Maybe a]]
 rows (Board cs) = [ [ cs (Coordinate r c) | c <- [1..boardCols]] | r <- [1..boardRows] ]
  
-column :: Int -> Board -> Maybe [Cell]
+column :: Int -> Board a -> Maybe [Maybe a]
 column colNum board = columns board `atZ` pred colNum
 
-columns :: Board -> [[Cell]]
+columns :: Board a -> [[Maybe a]]
 columns (Board cs) = [ [ cs (Coordinate r c) | r <- [1..boardRows]] | c <- [1..boardCols] ]
 
-diagonal :: Int -> Board -> Maybe [Cell]
+diagonal :: Int -> Board a -> Maybe [Maybe a]
 diagonal colNum board = diagonals board `atZ` pred colNum
 
-diagonals :: Board -> [[Cell]]
+diagonals :: Board a -> [[Maybe a]]
 diagonals (Board cs) = [ map (cs . uncurry Coordinate) [(1, 1), (2, 2), (3, 3)]
                        , map (cs . uncurry Coordinate) [(1, 3), (2, 2), (3, 1)]
                        ]
 
-render :: ([Cell] -> Text) -> Board -> Text
+render :: ([Maybe a] -> Text) -> Board a -> Text
 render r = r . cells

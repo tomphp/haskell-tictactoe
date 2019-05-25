@@ -5,13 +5,13 @@ import Test.Hspec
 import           TicTacToe.Board (Board, Cell(..), Error(..), contains)
 import qualified TicTacToe.Board as Board
 
-render :: [Cell] -> Text
+render :: [Maybe Cell] -> Text
 render = fromString . map (\case
-                              X     -> 'X'
-                              O     -> 'O'
-                              Empty -> 'E')
+                              Just X  -> 'X'
+                              Just O  -> 'O'
+                              Nothing -> 'E')
 
-boardStr :: Board -> Text
+boardStr :: Board Cell -> Text
 boardStr = Board.render render
 
 spec :: Spec
@@ -37,34 +37,27 @@ spec = do
           Board.setCell X cellNum board `shouldBe` Left CellIsNotEmpty
 
       context "for board in play" $ do
-        let (Right board) = ( Board.setCell X 1  -- row 1
-                  >=> Board.setCell O 2
-                  >=> Board.setCell Empty 3
-                  >=> Board.setCell O 4 -- row 2
-                  >=> Board.setCell O 5
-                  >=> Board.setCell X 6
-                  >=> Board.setCell Empty 7 -- row 3
-                  >=> Board.setCell Empty 8
-                  >=> Board.setCell X 9
-                  ) Board.empty
-
+        let board = Board.fromCells [ Just X,  Just O,  Nothing
+                                    , Just O,  Just O,  Just X
+                                    , Nothing, Nothing, Just X
+                                    ]
 
         describe "lines" $ do
           it "returns lines" $ do
-            Board.lines board `shouldBe` [ [ X,     O,     Empty ]
-                                         , [ O,     O,     X     ]
-                                         , [ Empty, Empty, X     ]
-                                         , [ X,     O,     Empty ]
-                                         , [ O,     O,     Empty ]
-                                         , [ Empty, X,     X     ]
-                                         , [ X,     O,     X     ]
-                                         , [ Empty, O,     Empty ]
+            Board.lines board `shouldBe` [ [ Just X,  Just O,  Nothing ]
+                                         , [ Just O,  Just O,  Just X  ]
+                                         , [ Nothing, Nothing, Just X  ]
+                                         , [ Just X,  Just O,  Nothing ]
+                                         , [ Just O,  Just O,  Nothing ]
+                                         , [ Nothing, Just X,  Just X  ]
+                                         , [ Just X,  Just O,  Just X  ]
+                                         , [ Nothing, Just O,  Nothing ]
                                          ]
         describe "row" $ do
           it "returns the row" $ do
-            Board.row 1 board `shouldBe` Just [ X,     O,     Empty ]
-            Board.row 2 board `shouldBe` Just [ O,     O,     X     ]
-            Board.row 3 board `shouldBe` Just [ Empty, Empty, X     ]
+            Board.row 1 board `shouldBe` Just [ Just X,   Just O,  Nothing ]
+            Board.row 2 board `shouldBe` Just [ Just O,   Just O,  Just X  ]
+            Board.row 3 board `shouldBe` Just [ Nothing,  Nothing, Just X  ]
 
           it "returns Nothing for a bad row number" $ do
             Board.row 0 board `shouldBe` Nothing
@@ -72,9 +65,9 @@ spec = do
 
         describe "column" $ do
           it "returns the column" $ do
-            Board.column 1 board `shouldBe` Just [ X,     O, Empty ]
-            Board.column 2 board `shouldBe` Just [ O,     O, Empty ]
-            Board.column 3 board `shouldBe` Just [ Empty, X, X     ]
+            Board.column 1 board `shouldBe` Just [ Just X,  Just O, Nothing ]
+            Board.column 2 board `shouldBe` Just [ Just O,  Just O, Nothing ]
+            Board.column 3 board `shouldBe` Just [ Nothing, Just X, Just X  ]
 
           it "returns Nothing for a bad column number" $ do
             Board.column 0 board `shouldBe` Nothing
@@ -82,8 +75,8 @@ spec = do
 
         describe "diagonal" $ do
           it "returns the diagonal" $ do
-            Board.diagonal 1 board `shouldBe` Just [ X,     O, X     ]
-            Board.diagonal 2 board `shouldBe` Just [ Empty, O, Empty ]
+            Board.diagonal 1 board `shouldBe` Just [ Just X,  Just O, Just X ]
+            Board.diagonal 2 board `shouldBe` Just [ Nothing, Just O, Nothing ]
 
           it "returns Nothing for a bad diagonal number" $ do
             Board.diagonal 0 board `shouldBe` Nothing
@@ -91,12 +84,15 @@ spec = do
 
       describe "render" $ do
         it "converts a board to text" $ do
-          let board = Board.fromCells [ X, O, Empty, X, Empty, O, Empty, X, O ]
+          let board = Board.fromCells [ Just X, Just O, Nothing
+                                      , Just X, Nothing, Just O
+                                      , Nothing, Just X, Just O
+                                      ]
 
           let r = fromString . map (\case
-                                      X     -> 'X'
-                                      O     -> 'O'
-                                      Empty -> 'E')
+                                      Just X  -> 'X'
+                                      Just O  -> 'O'
+                                      Nothing -> 'E')
 
           Board.render r board `shouldBe` "XOEXEOEXO"
 
@@ -105,23 +101,26 @@ spec = do
         let b = Board.empty
 
         it "returns true if board contains expected cell" $ do
-          (b `contains` Empty) `shouldBe` True
-          (b `contains` O    ) `shouldBe` False
-          (b `contains` X    ) `shouldBe` False
+          (b `contains` Nothing @(Maybe Cell)) `shouldBe` True
+          (b `contains` Just O               ) `shouldBe` False
+          (b `contains` Just X               ) `shouldBe` False
 
       context "for full board" $ do
-        let b = Board.fromCells [ X, O, X, O, X, O, X, O, X ]
+        let b = Board.fromCells [ Just X, Just O, Just X
+                                , Just O, Just X, Just O
+                                , Just X, Just O, Just X
+                                ]
 
         it "returns true if board contains expected cell" $ do
-          (b `contains` Empty) `shouldBe` False
-          (b `contains` O    ) `shouldBe` True
-          (b `contains` X    ) `shouldBe` True
+          (b `contains` Nothing) `shouldBe` False
+          (b `contains` Just O ) `shouldBe` True
+          (b `contains` Just X ) `shouldBe` True
 
     describe "fromCells" $ do
       it "creates a board from a string" $ do
-        let cells = [ X,     O,     Empty
-                    , O,     Empty, X
-                    , Empty, X,     O
+        let cells = [ Just X,  Just O,  Nothing
+                    , Just O,  Nothing, Just X
+                    , Nothing, Just X,  Just O
                     ]
 
         boardStr (Board.fromCells cells) `shouldBe` "XOEOEXEXO"

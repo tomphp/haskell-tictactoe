@@ -11,22 +11,22 @@ instance Show Result where
   show Draw       = "Draw"
   show (Winner p) = show p <> " win"
 
-fromBoard :: Board -> Result
+fromBoard :: Board Cell -> Result
 fromBoard b = case winnerFromBoard b of
   Just p  -> Winner p
-  Nothing -> if b `contains` Empty then InPlay else Draw
+  Nothing -> if b `contains` Nothing then InPlay else Draw
 
 isGameOver :: Result -> Bool
 isGameOver InPlay = False
 isGameOver _      = True
 
-winnerFromBoard :: Board -> Maybe Player
+winnerFromBoard :: Board Cell -> Maybe Player
 winnerFromBoard = asum . lineResults
 
-lineResults :: Board -> [Maybe Player]
+lineResults :: Board Cell -> [Maybe Player]
 lineResults = map lineWinner . Board.lines
 
-lineWinner :: [Cell] -> Maybe Player
-lineWinner [X, X, X] = Just Crosses
-lineWinner [O, O, O] = Just Naughts
-lineWinner _         = Nothing
+lineWinner :: [Maybe Cell] -> Maybe Player
+lineWinner [Just X, Just X, Just X] = Just Crosses
+lineWinner [Just O, Just O, Just O] = Just Naughts
+lineWinner _                        = Nothing

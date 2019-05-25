@@ -40,7 +40,7 @@ instance MonadIO m => UI (TerminalGame m) where
       when (isNothing pos) $ displayMessage "Try again..."
       return pos
 
-boardRenderer :: [Cell] -> Text
+boardRenderer :: [Maybe Cell] -> Text
 boardRenderer cs = rendered
   where
     rendered    = intercalate "\n---------\n" formatted
@@ -49,7 +49,7 @@ boardRenderer cs = rendered
     parsedBoard = zipWith (curry cellToChar) cs [1..9]
     formatRow   = unwords . intersperse "|"
 
-cellToChar :: (Cell, Int) -> Text
-cellToChar (O, _)          = "O"
-cellToChar (X, _)          = "X"
-cellToChar (Empty, number) = tshow number
+cellToChar :: (Maybe Cell, Int) -> Text
+cellToChar (Just O,  _     ) = "O"
+cellToChar (Just X,  _     ) = "X"
+cellToChar (Nothing, number) = tshow number

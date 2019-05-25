@@ -24,7 +24,7 @@ import           TicTacToe.UI     (UI(..))
 
 type Inputs = [Int]
 
-data Output = DisplayBoard Board | DisplayMessage Text deriving (Eq, Show)
+data Output = DisplayBoard (Board Cell) | DisplayMessage Text deriving (Eq, Show)
 type Outputs = [Output]
 
 data TestState = TestState { _state :: State, _inputs :: Inputs }
@@ -61,16 +61,16 @@ instance Monad m => MonadState State (TestGame m) where
   put s = TestGame $ state .= s
   get = TestGame $ use state
 
-newState :: Board -> Player -> Inputs -> TestState
+newState :: Board Cell -> Player -> Inputs -> TestState
 newState b p ins = TestState { _state = State { _board = b, _player = p }
                              , _inputs = ins
                              }
 
-toCells :: String -> [Cell]
+toCells :: String -> [Maybe Cell]
 toCells = map charToCell
-  where charToCell 'X' = X
-        charToCell 'O' = O
-        charToCell _   = Empty
+  where charToCell 'X' = Just X
+        charToCell 'O' = Just O
+        charToCell _   = Nothing
 
 -- Tests 
 
