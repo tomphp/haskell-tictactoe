@@ -2,10 +2,11 @@ module TicTacToe.Board
   ( Board
   , Error(..)
   , Cell(..)
-  , cells
   , column
+  , contains
   , diagonal
   , fromCells
+  , getCell
   , lines
   , empty
   , row
@@ -23,7 +24,7 @@ data Cell = Empty | O | X deriving (Eq, Show)
 
 data Error = CellDoesNotExist | CellIsNotEmpty deriving (Eq, Show)
 
-newtype Board = Board (Coordinate -> Cell)
+newtype Board = Board { getCell :: Coordinate -> Cell }
 
 instance Semigroup Board where
   Board b1 <> Board b2 = Board $ combine b1 b2
@@ -78,6 +79,9 @@ setCell cell position (Board cs) =
     Just coord -> if cs coord == Empty
                    then return $ singleCell cell coord <> Board cs
                    else throwError CellIsNotEmpty
+
+contains :: Board -> Cell -> Bool
+contains b c = c `elem` cells b
 
 cells :: Board -> [Cell]
 cells (Board cs) = map cs allCoords

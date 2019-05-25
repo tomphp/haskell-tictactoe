@@ -1,11 +1,18 @@
 module TicTacToe.BoardSpec where
 
-import Control.Error.Safe (atZ)
-import Data.List (nub)
 import Test.Hspec
 
-import           TicTacToe.Board (Cell(..), Error(..))
+import           TicTacToe.Board (Board, Cell(..), Error(..), contains)
 import qualified TicTacToe.Board as Board
+
+render :: [Cell] -> Text
+render = fromString . map (\case
+                              X     -> 'X'
+                              O     -> 'O'
+                              Empty -> 'E')
+
+boardStr :: Board -> Text
+boardStr = Board.render render
 
 spec :: Spec
 spec = do
@@ -13,21 +20,15 @@ spec = do
     describe "Board" $ do
       describe "empty" $ do
         it "returns a empty board contains 9 empty cells" $ do
-          Board.cells Board.empty `shouldBe` replicate 9 Empty
+          boardStr Board.empty `shouldBe` replicate 9 'E'
 
       describe "setCell" $ do
         let cellNum = 5
-        let cellIndex = pred cellNum
 
         let (Right board) = Board.setCell X cellNum Board.empty
-        let cells = Board.cells board
 
         it "sets a cell on the board" $ do
-           cells `atZ` cellIndex `shouldBe` Just X
-
-        it "doesn't modify other cells" $ do
-          nub (take (pred cellIndex) cells) `shouldBe` [Empty]
-          nub (drop (succ cellIndex) cells) `shouldBe` [Empty]
+          boardStr board `shouldBe` "EEEEXEEEE"
 
         it "returns CellDoesNotExist when trying to set an invalid cell" $ do
           Board.setCell X 0 board `shouldBe` Left CellDoesNotExist
@@ -99,6 +100,23 @@ spec = do
 
           Board.render r board `shouldBe` "XOEXEOEXO"
 
+    describe "contains" $ do
+      context "for empty board" $ do
+        let b = Board.empty
+
+        it "returns true if board contains expected cell" $ do
+          (b `contains` Empty) `shouldBe` True
+          (b `contains` O    ) `shouldBe` False
+          (b `contains` X    ) `shouldBe` False
+
+      context "for full board" $ do
+        let b = Board.fromCells [ X, O, X, O, X, O, X, O, X ]
+
+        it "returns true if board contains expected cell" $ do
+          (b `contains` Empty) `shouldBe` False
+          (b `contains` O    ) `shouldBe` True
+          (b `contains` X    ) `shouldBe` True
+
     describe "fromCells" $ do
       it "creates a board from a string" $ do
         let cells = [ X,     O,     Empty
@@ -106,4 +124,4 @@ spec = do
                     , Empty, X,     O
                     ]
 
-        Board.cells (Board.fromCells cells) `shouldBe` cells
+        boardStr (Board.fromCells cells) `shouldBe` "XOEOEXEXO"

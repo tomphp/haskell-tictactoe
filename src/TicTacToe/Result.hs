@@ -1,6 +1,6 @@
 module TicTacToe.Result (Result(..), fromBoard, isGameOver) where
 
-import           TicTacToe.Board  (Board, Cell(..))
+import           TicTacToe.Board  (Board, Cell(..), contains)
 import qualified TicTacToe.Board  as Board
 import           TicTacToe.Player (Player(..))
 
@@ -14,7 +14,7 @@ instance Show Result where
 fromBoard :: Board -> Result
 fromBoard b = case winnerFromBoard b of
   Just p  -> Winner p
-  Nothing -> if Empty `elem` Board.cells b then InPlay else Draw
+  Nothing -> if b `contains` Empty then InPlay else Draw
 
 isGameOver :: Result -> Bool
 isGameOver InPlay = False
