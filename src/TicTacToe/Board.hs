@@ -16,8 +16,9 @@ module TicTacToe.Board
 import Prelude hiding (empty, lines)
 
 import Control.Monad.Except (MonadError, throwError)
+import Control.Error.Safe   (atZ)
 
-import Control.Error.Safe (atZ)
+import TicTacToe.Line (Line(..))
 
 data Error = CellDoesNotExist | CellIsNotEmpty deriving (Eq, Show)
 
@@ -86,28 +87,30 @@ cells (Board cs) = map cs allCoords
 allCoords :: [Coordinate]
 allCoords = [ Coordinate r c | r <- [1..boardCols], c <- [1..boardRows] ]
 
-lines :: Board a -> [[Maybe a]]
+lines :: Board a -> [Line a]
 lines board = concat [ rows board, columns board, diagonals board ]
 
-row :: Int -> Board a -> Maybe [Maybe a]
+row :: Int -> Board a -> Maybe (Line a)
 row rowNum board = rows board `atZ` pred rowNum
 
-rows :: Board a -> [[Maybe a]]
-rows (Board cs) = [ [ cs (Coordinate r c) | c <- [1..boardCols]] | r <- [1..boardRows] ]
+rows :: Board a -> [Line a]
+rows (Board cs) = [ Line [ cs (Coordinate r c) | c <- [1..boardCols]] | r <- [1..boardRows] ]
  
-column :: Int -> Board a -> Maybe [Maybe a]
+column :: Int -> Board a -> Maybe (Line a)
 column colNum board = columns board `atZ` pred colNum
 
-columns :: Board a -> [[Maybe a]]
-columns (Board cs) = [ [ cs (Coordinate r c) | r <- [1..boardRows]] | c <- [1..boardCols] ]
+columns :: Board a -> [Line a]
+columns (Board cs) = [ Line [ cs (Coordinate r c) | r <- [1..boardRows]] | c <- [1..boardCols] ]
 
-diagonal :: Int -> Board a -> Maybe [Maybe a]
+diagonal :: Int -> Board a -> Maybe (Line a)
 diagonal colNum board = diagonals board `atZ` pred colNum
 
-diagonals :: Board a -> [[Maybe a]]
-diagonals (Board cs) = [ map (cs . uncurry Coordinate) [(1, 1), (2, 2), (3, 3)]
-                       , map (cs . uncurry Coordinate) [(1, 3), (2, 2), (3, 1)]
-                       ]
+diagonals :: Board a -> [Line a]
+diagonals (Board cs) =
+  map Line
+    [ map (cs . uncurry Coordinate) [(1, 1), (2, 2), (3, 3)]
+    , map (cs . uncurry Coordinate) [(1, 3), (2, 2), (3, 1)]
+    ]
 
 render :: ([Maybe a] -> Text) -> Board a -> Text
 render r = r . cells

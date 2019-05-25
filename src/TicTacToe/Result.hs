@@ -2,6 +2,7 @@ module TicTacToe.Result (Result(..), fromBoard, isGameOver) where
 
 import           TicTacToe.Board  (Board, contains)
 import qualified TicTacToe.Board  as Board
+import qualified TicTacToe.Line   as Line
 import           TicTacToe.Player (Player(..))
 
 data Result = InPlay | Draw | Winner Player deriving (Eq)
@@ -24,9 +25,4 @@ winnerFromBoard :: Board Player -> Maybe Player
 winnerFromBoard = asum . lineResults
 
 lineResults :: Board Player -> [Maybe Player]
-lineResults = map lineWinner . Board.lines
-
-lineWinner :: [Maybe Player] -> Maybe Player
-lineWinner [Just X, Just X, Just X] = Just X
-lineWinner [Just O, Just O, Just O] = Just O
-lineWinner _                        = Nothing
+lineResults = map Line.winner . Board.lines
