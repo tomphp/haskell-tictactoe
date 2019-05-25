@@ -9,10 +9,10 @@ spec :: Spec
 spec = describe "TicTacToe.Player" $ do
   describe "show" $
     it "shows the player" $ do
-      show Naughts `shouldBe` "Naughts"
-      show Crosses `shouldBe` "Crosses"
+      show O `shouldBe` "Naughts"
+      show X `shouldBe` "Crosses"
 
   describe "switch" $
     it "switch players" $ do
-      Player.switch Naughts `shouldBe` Crosses
-      Player.switch Crosses `shouldBe` Naughts
+      Player.switch O `shouldBe` X
+      Player.switch X `shouldBe` O

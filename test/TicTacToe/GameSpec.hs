@@ -11,10 +11,10 @@ import Control.Monad.Writer (MonadWriter(tell))
 
 import Test.Hspec
 
-import           TicTacToe.Board  (Board, Cell(..))
+import           TicTacToe.Board  (Board) 
 import qualified TicTacToe.Board  as Board
 import qualified TicTacToe.Game   as Game
-import           TicTacToe.Player (Player(Naughts, Crosses))
+import           TicTacToe.Player (Player(..))
 import qualified TicTacToe.Result as Result
 import           TicTacToe.State  (State(..))
 import qualified TicTacToe.State  as State
@@ -24,7 +24,7 @@ import           TicTacToe.UI     (UI(..))
 
 type Inputs = [Int]
 
-data Output = DisplayBoard (Board Cell) | DisplayMessage Text deriving (Eq, Show)
+data Output = DisplayBoard (Board Player) | DisplayMessage Text deriving (Eq, Show)
 type Outputs = [Output]
 
 data TestState = TestState { _state :: State, _inputs :: Inputs }
@@ -61,12 +61,12 @@ instance Monad m => MonadState State (TestGame m) where
   put s = TestGame $ state .= s
   get = TestGame $ use state
 
-newState :: Board Cell -> Player -> Inputs -> TestState
+newState :: Board Player -> Player -> Inputs -> TestState
 newState b p ins = TestState { _state = State { _board = b, _player = p }
                              , _inputs = ins
                              }
 
-toCells :: String -> [Maybe Cell]
+toCells :: String -> [Maybe Player]
 toCells = map charToCell
   where charToCell 'X' = Just X
         charToCell 'O' = Just O
@@ -82,7 +82,7 @@ spec = do
         pending
 
     describe "playTurn" $ do
-      before (runTestGame Game.playTurn $ newState Board.empty Crosses [1])
+      before (runTestGame Game.playTurn $ newState Board.empty X [1])
         $ context "new game" $ do
           it "does not finish the game" $ \(Right (result, _, _)) -> do
             Result.isGameOver result `shouldBe` False
@@ -93,12 +93,12 @@ spec = do
                                ]
 
           it "switches player" $ \(Right (_, st, _)) -> do
-            st^.state^.State.player `shouldBe` Naughts
+            st^.state^.State.player `shouldBe` O
 
           it "sets the cell" $ \(Right (_, st, _)) -> do
             st^.state^.State.board `shouldBe` Board.fromCells (toCells "X        ")
 
-      before (runTestGame Game.playTurn $ newState (Board.fromCells (toCells "X        ")) Naughts [1, 2])
+      before (runTestGame Game.playTurn $ newState (Board.fromCells (toCells "X        ")) O [1, 2])
         $ context "cross take" $ do
           it "does not finish the game" $ \(Right (result, _, _)) -> do
             Result.isGameOver result `shouldBe` False
@@ -113,12 +113,12 @@ spec = do
                                ]
 
           it "switches player" $ \(Right (_, st, _)) -> do
-            st^.state^.State.player `shouldBe` Crosses
+            st^.state^.State.player `shouldBe` X
 
           it "sets the cell" $ \(Right (_, st, _)) -> do
             st^.state^.State.board `shouldBe` Board.fromCells (toCells "XO       ")
 
-      before (runTestGame Game.playTurn $ newState Board.empty Crosses [0, 1])
+      before (runTestGame Game.playTurn $ newState Board.empty X [0, 1])
         $ context "invalid cell number entered" $ do
           it "does not finish the game" $ \(Right (result, _, _)) -> do
             Result.isGameOver result `shouldBe` False
@@ -133,12 +133,12 @@ spec = do
                                ]
 
           it "switches player" $ \(Right (_, st, _)) -> do
-            st^.state^.State.player `shouldBe` Naughts
+            st^.state^.State.player `shouldBe` O
 
           it "sets the cell" $ \(Right (_, st, _)) -> do
             st^.state^.State.board `shouldBe` Board.fromCells (toCells "X        ")
 
-      before (runTestGame Game.playTurn $ newState (Board.fromCells (toCells "XO XO    ")) Crosses [7])
+      before (runTestGame Game.playTurn $ newState (Board.fromCells (toCells "XO XO    ")) X [7])
         $ context "crosses win" $ do
           it "does not finish the game" $ \(Right (result, _, _)) -> do
             Result.isGameOver result `shouldBe` True

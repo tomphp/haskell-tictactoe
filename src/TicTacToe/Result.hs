@@ -1,6 +1,6 @@
 module TicTacToe.Result (Result(..), fromBoard, isGameOver) where
 
-import           TicTacToe.Board  (Board, Cell(..), contains)
+import           TicTacToe.Board  (Board, contains)
 import qualified TicTacToe.Board  as Board
 import           TicTacToe.Player (Player(..))
 
@@ -11,7 +11,7 @@ instance Show Result where
   show Draw       = "Draw"
   show (Winner p) = show p <> " win"
 
-fromBoard :: Board Cell -> Result
+fromBoard :: Board Player -> Result
 fromBoard b = case winnerFromBoard b of
   Just p  -> Winner p
   Nothing -> if b `contains` Nothing then InPlay else Draw
@@ -20,13 +20,13 @@ isGameOver :: Result -> Bool
 isGameOver InPlay = False
 isGameOver _      = True
 
-winnerFromBoard :: Board Cell -> Maybe Player
+winnerFromBoard :: Board Player -> Maybe Player
 winnerFromBoard = asum . lineResults
 
-lineResults :: Board Cell -> [Maybe Player]
+lineResults :: Board Player -> [Maybe Player]
 lineResults = map lineWinner . Board.lines
 
-lineWinner :: [Maybe Cell] -> Maybe Player
-lineWinner [Just X, Just X, Just X] = Just Crosses
-lineWinner [Just O, Just O, Just O] = Just Naughts
+lineWinner :: [Maybe Player] -> Maybe Player
+lineWinner [Just X, Just X, Just X] = Just X
+lineWinner [Just O, Just O, Just O] = Just O
 lineWinner _                        = Nothing

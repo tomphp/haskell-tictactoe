@@ -2,7 +2,11 @@
 
 module TicTacToe.Player where
 
-data Player = Naughts | Crosses deriving (Bounded, CycleEnum, Enum, Eq, Show)
+data Player = X | O deriving (Bounded, CycleEnum, Enum, Eq)
+
+instance Show Player where
+  show X = "Crosses"
+  show O = "Naughts"
 
 switch :: Player -> Player
 switch = csucc

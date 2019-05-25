@@ -2,16 +2,17 @@ module TicTacToe.BoardSpec where
 
 import Test.Hspec
 
-import           TicTacToe.Board (Board, Cell(..), Error(..), contains)
-import qualified TicTacToe.Board as Board
+import           TicTacToe.Board  (Board, Error(..), contains)
+import           TicTacToe.Player (Player(..))
+import qualified TicTacToe.Board  as Board
 
-render :: [Maybe Cell] -> Text
+render :: [Maybe Player] -> Text
 render = fromString . map (\case
                               Just X  -> 'X'
                               Just O  -> 'O'
                               Nothing -> 'E')
 
-boardStr :: Board Cell -> Text
+boardStr :: Board Player -> Text
 boardStr = Board.render render
 
 spec :: Spec
@@ -101,9 +102,9 @@ spec = do
         let b = Board.empty
 
         it "returns true if board contains expected cell" $ do
-          (b `contains` Nothing @(Maybe Cell)) `shouldBe` True
-          (b `contains` Just O               ) `shouldBe` False
-          (b `contains` Just X               ) `shouldBe` False
+          (b `contains` Nothing @(Maybe Player)) `shouldBe` True
+          (b `contains` Just O                 ) `shouldBe` False
+          (b `contains` Just X                 ) `shouldBe` False
 
       context "for full board" $ do
         let b = Board.fromCells [ Just X, Just O, Just X

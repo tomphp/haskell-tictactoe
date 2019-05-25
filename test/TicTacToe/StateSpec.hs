@@ -15,7 +15,7 @@ spec = describe "TicTacToe.State" $
     let state = State.new
 
     it "should initialise the player to Crosses" $
-      (state^.player) `shouldBe` Crosses
+      (state^.player) `shouldBe` X
   
     it "should initialise the board to an empty board" $
       (state^.board) `shouldBe` Board.empty

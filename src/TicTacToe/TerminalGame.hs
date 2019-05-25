@@ -6,10 +6,10 @@ import Control.Monad.Loops        (untilJust)
 import Control.Monad.State.Strict (MonadState, StateT, evalStateT)
 import Data.List.Split (chunksOf)
 
-import           TicTacToe.Board  (Cell(..))
 import qualified TicTacToe.Board  as Board
-import           TicTacToe.Game   (State)
+import           TicTacToe.Player (Player(..))
 import qualified TicTacToe.Game   as Game
+import           TicTacToe.State  (State)
 import qualified TicTacToe.State  as State
 import           TicTacToe.UI     (UI(..))
 
@@ -40,7 +40,7 @@ instance MonadIO m => UI (TerminalGame m) where
       when (isNothing pos) $ displayMessage "Try again..."
       return pos
 
-boardRenderer :: [Maybe Cell] -> Text
+boardRenderer :: [Maybe Player] -> Text
 boardRenderer cs = rendered
   where
     rendered    = intercalate "\n---------\n" formatted
@@ -49,7 +49,7 @@ boardRenderer cs = rendered
     parsedBoard = zipWith (curry cellToChar) cs [1..9]
     formatRow   = unwords . intersperse "|"
 
-cellToChar :: (Maybe Cell, Int) -> Text
+cellToChar :: (Maybe Player, Int) -> Text
 cellToChar (Just O,  _     ) = "O"
 cellToChar (Just X,  _     ) = "X"
 cellToChar (Nothing, number) = tshow number

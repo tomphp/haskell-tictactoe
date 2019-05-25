@@ -1,6 +1,5 @@
 module TicTacToe.Game
   ( Error
-  , State
   , game
   , playTurn
   , gameOverScreen
@@ -13,9 +12,7 @@ import Control.Monad.Loops  (iterateUntil)
 
 import Fmt
 
-import           TicTacToe.Board  (Cell(..))
 import qualified TicTacToe.Board  as Board
-import           TicTacToe.Player (Player(..))
 import qualified TicTacToe.Player as Player
 import           TicTacToe.Result (Result(..))
 import qualified TicTacToe.Result as Result
@@ -67,12 +64,9 @@ setCell position = do
   p <- use State.player
   b <- use State.board
 
-  case Board.setCell (cell p) position b of
+  case Board.setCell p position b of
     Right b' -> State.board .= b'
     Left e   -> throwError $ BoardError e
-
-  where cell Naughts = O
-        cell Crosses = X
 
 errorMsg :: Board.Error -> Text
 errorMsg Board.CellDoesNotExist =  "Attempting to set a cell which does not exist"

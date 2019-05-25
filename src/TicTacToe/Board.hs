@@ -1,7 +1,6 @@
 module TicTacToe.Board
   ( Board
   , Error(..)
-  , Cell(..)
   , column
   , contains
   , diagonal
@@ -19,8 +18,6 @@ import Prelude hiding (empty, lines)
 import Control.Monad.Except (MonadError, throwError)
 
 import Control.Error.Safe (atZ)
-
-data Cell = O | X deriving (Eq, Show)
 
 data Error = CellDoesNotExist | CellIsNotEmpty deriving (Eq, Show)
 
