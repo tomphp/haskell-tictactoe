@@ -96,7 +96,7 @@ spec = do
                                       Just O  -> 'O'
                                       Nothing -> 'E')
 
-          Board.render r board `shouldBe` "XOEXEOEXO"
+          Board.render r board `shouldBe` ("XOEXEOEXO" :: Text)
 
     describe "contains" $ do
       context "for empty board" $ do

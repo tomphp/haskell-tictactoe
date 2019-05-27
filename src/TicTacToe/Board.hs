@@ -108,9 +108,9 @@ diagonal colNum board = diagonals board `atZ` pred colNum
 diagonals :: Board a -> [Line a]
 diagonals (Board cs) =
   map Line
-    [ map (cs . uncurry Coordinate) [(1, 1), (2, 2), (3, 3)]
-    , map (cs . uncurry Coordinate) [(1, 3), (2, 2), (3, 1)]
+    [ map (cs . uncurry Coordinate) [(1, 1), (2, 2), (3, 3)] -- too specific
+    , map (cs . uncurry Coordinate) [(1, 3), (2, 2), (3, 1)] -- too specific
     ]
 
-render :: ([Maybe a] -> Text) -> Board a -> Text
+render :: ([Maybe a] -> b) -> Board a -> b
 render r = r . cells
