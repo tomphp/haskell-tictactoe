@@ -2,7 +2,6 @@
 
 module TicTacToe.GameSpec where
 
-import Control.Error.Safe   (headZ, tailZ)
 import Control.Lens         ((^.), (.=), makeLenses, use)
 import Control.Monad.Except (ExceptT, MonadError, runExceptT)
 import Control.Monad.RWS    (RWST, runRWST)
@@ -45,8 +44,7 @@ instance Monad m => UI (TestGame m) where
   displayMessage msg = tell [DisplayMessage msg]
   displayBoard b = tell [DisplayBoard b]
   getPositionInput = do ins <- getInputs
-                        let Just h = headZ ins
-                        let Just t = tailZ ins
+                        let (h:t) = ins
                         putInputs t
                         return h
 
