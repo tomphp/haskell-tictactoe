@@ -4,11 +4,11 @@ module TicTacToe.State (State(..), board, player, new) where
 
 import Control.Lens (makeLenses)
 
-import qualified TicTacToe.Board  as Board
 import           TicTacToe.Board  (Board)
+import qualified TicTacToe.Board  as Board
 import           TicTacToe.Player (Player(..))
 
-data State = State { _board :: Board Player
+data State = State { _board  :: Board Player
                    , _player :: Player
                    }
 

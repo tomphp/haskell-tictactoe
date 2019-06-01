@@ -5,10 +5,10 @@ module TicTacToe.Game
   , gameOverScreen
   ) where
 
-import Control.Lens         ((.=), (%=), use)
-import Control.Monad.State  (MonadState)
+import Control.Lens         (use, (%=), (.=))
 import Control.Monad.Except (MonadError, catchError, throwError)
 import Control.Monad.Loops  (iterateUntil)
+import Control.Monad.State  (MonadState)
 
 import Fmt
 

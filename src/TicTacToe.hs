@@ -1,4 +1,4 @@
-module TicTacToe (run) where 
+module TicTacToe (run) where
 
 import qualified TicTacToe.Game         as Game
 import qualified TicTacToe.TerminalGame as TerminalGame

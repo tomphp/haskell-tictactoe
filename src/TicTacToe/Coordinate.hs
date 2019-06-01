@@ -22,7 +22,7 @@ columnCount :: Int
 columnCount = 3
 
 new :: MonadError () m => Int -> Int -> m Coordinate
-new r c 
+new r c
   | r < 1           = throwError ()
   | c < 1           = throwError ()
   | r > rowCount    = throwError ()
@@ -49,10 +49,10 @@ allCoordinates = [Coordinate r c | r <- [1..rowCount], c <- [1..columnCount]]
 
 allRows :: [[Coordinate]]
 allRows = [[Coordinate r c | c <- [1..columnCount] ] | r <- [1..rowCount]]
- 
+
 allColumns :: [[Coordinate]]
 allColumns = [[Coordinate r c | r <- [1..rowCount] ] | c <- [1..columnCount]]
- 
+
 allDiagonals :: [[Coordinate]]
 allDiagonals =
     [ uncurry Coordinate <$> [(1, 1), (2, 2), (3, 3)] -- too specific

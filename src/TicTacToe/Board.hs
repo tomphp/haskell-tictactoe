@@ -14,9 +14,9 @@ import Prelude hiding (empty, lines)
 
 import Control.Monad.Except (MonadError, throwError)
 
-import           TicTacToe.Line (Line(..))
 import           TicTacToe.Coordinate (Coordinate)
 import qualified TicTacToe.Coordinate as Coordinate
+import           TicTacToe.Line       (Line(..))
 
 data Error = CellDoesNotExist | CellIsNotEmpty deriving (Eq, Show)
 
@@ -70,7 +70,7 @@ lines board = mconcat [rows board, columns board, diagonals board]
 
 rows :: Board a -> [Line a]
 rows (Board get) = fmap (Line . fmap get) Coordinate.allRows
- 
+
 columns :: Board a -> [Line a]
 columns (Board get) = fmap (Line . fmap get) Coordinate.allColumns
 

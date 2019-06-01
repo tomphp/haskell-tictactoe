@@ -1,8 +1,8 @@
 module TicTacToe.Result (Result(..), fromBoard, isGameOver) where
 
-import           TicTacToe.Board  (Board, contains)
-import qualified TicTacToe.Board  as Board
-import qualified TicTacToe.Line   as Line
+import           TicTacToe.Board (Board, contains)
+import qualified TicTacToe.Board as Board
+import qualified TicTacToe.Line  as Line
 
 data Result p = InPlay | Draw | Winner p deriving (Eq)
 

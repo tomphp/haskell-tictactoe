@@ -1,5 +1,5 @@
 module Prelude
-  ( module ClassyPrelude 
+  ( module ClassyPrelude
   , CycleEnum(..)
   ) where
 

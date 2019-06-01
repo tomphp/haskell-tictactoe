@@ -5,11 +5,11 @@ import Control.Monad.Except       (ExceptT, MonadError, runExceptT)
 import Control.Monad.Loops        (untilJust)
 import Control.Monad.Reader       (MonadReader, ReaderT, ask, runReaderT)
 import Control.Monad.State.Strict (MonadState, get, put)
-import Data.List.Split (chunksOf)
+import Data.List.Split            (chunksOf)
 
 import qualified TicTacToe.Board  as Board
-import           TicTacToe.Player (Player(..))
 import qualified TicTacToe.Game   as Game
+import           TicTacToe.Player (Player(..))
 import           TicTacToe.State  (State)
 import qualified TicTacToe.State  as State
 import           TicTacToe.UI     (UI(..))

@@ -1,0 +1,58 @@
+steps:
+  # Convert some ASCII sequences to their Unicode equivalents. This is disabled
+  # by default.
+  # - unicode_syntax:
+  #     # In order to make this work, we also need to insert the UnicodeSyntax
+  #     # language pragma. If this flag is set to true, we insert it when it's
+  #     # not already present. You may want to disable it if you configure
+  #     # language extensions using some other method than pragmas. Default:
+  #     # true.
+  #     add_language_pragma: true
+
+  - simple_align:
+      cases: true
+      top_level_patterns: true
+      records: true
+
+  # Import cleanup
+  - imports:
+      align: group
+      list_align: after_alias
+      pad_module_names: true
+      long_list_align: inline
+      empty_list_align: inherit
+      list_padding: 4
+      separate_lists: false
+      space_surround: false
+
+  # Language pragmas
+  - language_pragmas:
+      style: vertical
+      align: true
+      remove_redundant: true
+
+  # Replace tabs by spaces. This is disabled by default.
+  # - tabs:
+  #     # Number of spaces to use for each tab. Default: 8, as specified by the
+  #     # Haskell report.
+  #     spaces: 8
+
+  # Remove trailing whitespace
+  - trailing_whitespace: {}
+
+  # Squash multiple spaces between the left and right hand sides of some
+  # elements into single spaces. Basically, this undoes the effect of
+  # simple_align but is a bit less conservative.
+  # - squash: {}
+
+columns: 80
+newline: lf
+
+# Sometimes, language extensions are specified in a cabal file or from the
+# command line instead of using language pragmas in the file. stylish-haskell
+# needs to be aware of these, so it can parse the file correctly.
+#
+# No language extensions are enabled by default.
+language_extensions:
+  - FlexibleContexts
+  - MultiParamTypeClasses
