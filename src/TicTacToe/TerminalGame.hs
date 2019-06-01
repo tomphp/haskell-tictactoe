@@ -3,7 +3,8 @@ module TicTacToe.TerminalGame (run) where
 import Control.Error.Safe         (readZ)
 import Control.Monad.Except       (ExceptT, MonadError, runExceptT)
 import Control.Monad.Loops        (untilJust)
-import Control.Monad.State.Strict (MonadState, StateT, evalStateT)
+import Control.Monad.Reader       (MonadReader, ReaderT, ask, runReaderT)
+import Control.Monad.State.Strict (MonadState, get, put)
 import Data.List.Split (chunksOf)
 
 import qualified TicTacToe.Board  as Board
@@ -13,21 +14,27 @@ import           TicTacToe.State  (State)
 import qualified TicTacToe.State  as State
 import           TicTacToe.UI     (UI(..))
 
-newtype TerminalGame m a = TerminalGame { runTerminalGame :: StateT State (ExceptT Game.Error m) a }
+type Env = IORef State
+
+newtype TerminalGame m a =
+  TerminalGame { runTerminalGame :: ReaderT Env (ExceptT Game.Error m) a }
   deriving ( Functor
            , Applicative
            , Monad
            , MonadIO
-           , MonadState State
+           , MonadReader Env
            , MonadError Game.Error
            )
 
-run :: Monad m => TerminalGame m a -> m a
-run game =
-  result >>= \case
-                Right v -> return v
-                Left _  -> error "Error happened"
-  where result = runExceptT $ evalStateT (runTerminalGame game) State.new
+run :: MonadIO m => TerminalGame m a -> m a
+run game = do
+  ref <- newIORef State.new
+  result <- runExceptT $ runReaderT (runTerminalGame game) ref
+  either (error "Error happened") return result
+
+instance MonadIO m => MonadState State (TerminalGame m) where
+  get = ask >>= readIORef
+  put s = ask >>= \ref -> writeIORef ref s
 
 instance MonadIO m => UI (TerminalGame m) where
   displayMessage = putStrLn
