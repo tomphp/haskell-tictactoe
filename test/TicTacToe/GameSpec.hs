@@ -74,82 +74,79 @@ toCells = map charToCell
 -- Tests 
 
 spec :: Spec
-spec = do
-  describe "TicTacToe.Game" $ do
-    describe "game" $ do
-      it "something" $ do
-        pending
+spec = describe "TicTacToe.Game" $ do
+  describe "game" $
+    it "something" pending
 
-    describe "playTurn" $ do
-      before (runTestGame Game.playTurn $ newState Board.empty X [1])
-        $ context "new game" $ do
-          it "does not finish the game" $ \(Right (result, _, _)) -> do
-            Result.isGameOver result `shouldBe` False
+  describe "playTurn" $ do
+    before (runTestGame Game.playTurn $ newState Board.empty X [1])
+      $ context "new game" $ do
+        it "does not finish the game" $ \(Right (result, _, _)) ->
+          Result.isGameOver result `shouldBe` False
 
-          it "displays the board and requests an action" $ \(Right (_, _, outputs)) -> do
-            outputs `shouldBe` [ DisplayBoard Board.empty
-                               , DisplayMessage "Crosses, choose cell:"
-                               ]
+        it "displays the board and requests an action" $ \(Right (_, _, outputs)) ->
+          outputs `shouldBe` [ DisplayBoard Board.empty
+                             , DisplayMessage "Crosses, choose cell:"
+                             ]
 
-          it "switches player" $ \(Right (_, st, _)) -> do
-            st^.state^.player `shouldBe` O
+        it "switches player" $ \(Right (_, st, _)) ->
+          st^.state^.player `shouldBe` O
 
-          it "sets the cell" $ \(Right (_, st, _)) -> do
-            st^.state^.board `shouldBe` Board.fromCells (toCells "X        ")
+        it "sets the cell" $ \(Right (_, st, _)) ->
+          st^.state^.board `shouldBe` Board.fromCells (toCells "X        ")
 
-      before (runTestGame Game.playTurn $ newState (Board.fromCells (toCells "X        ")) O [1, 2])
-        $ context "cross take" $ do
-          it "does not finish the game" $ \(Right (result, _, _)) -> do
-            Result.isGameOver result `shouldBe` False
+    before (runTestGame Game.playTurn $ newState (Board.fromCells (toCells "X        ")) O [1, 2])
+      $ context "cross take" $ do
+        it "does not finish the game" $ \(Right (result, _, _)) ->
+          Result.isGameOver result `shouldBe` False
 
-          it "displays the board and requests an action" $ \(Right (_, _, outputs)) -> do
-            outputs `shouldBe` [ DisplayBoard (Board.fromCells (toCells "X        "))
-                               , DisplayMessage "Naughts, choose cell:"
-                               , DisplayMessage "Attempting to set a cell which is not empty"
-                               , DisplayMessage "Try again"
-                               , DisplayBoard (Board.fromCells (toCells "X        "))
-                               , DisplayMessage "Naughts, choose cell:"
-                               ]
+        it "displays the board and requests an action" $ \(Right (_, _, outputs)) ->
+          outputs `shouldBe` [ DisplayBoard (Board.fromCells (toCells "X        "))
+                             , DisplayMessage "Naughts, choose cell:"
+                             , DisplayMessage "Attempting to set a cell which is not empty"
+                             , DisplayMessage "Try again"
+                             , DisplayBoard (Board.fromCells (toCells "X        "))
+                             , DisplayMessage "Naughts, choose cell:"
+                             ]
 
-          it "switches player" $ \(Right (_, st, _)) -> do
-            st^.state^.player `shouldBe` X
+        it "switches player" $ \(Right (_, st, _)) ->
+          st^.state^.player `shouldBe` X
 
-          it "sets the cell" $ \(Right (_, st, _)) -> do
-            st^.state^.board `shouldBe` Board.fromCells (toCells "XO       ")
+        it "sets the cell" $ \(Right (_, st, _)) ->
+          st^.state^.board `shouldBe` Board.fromCells (toCells "XO       ")
 
-      before (runTestGame Game.playTurn $ newState Board.empty X [0, 1])
-        $ context "invalid cell number entered" $ do
-          it "does not finish the game" $ \(Right (result, _, _)) -> do
-            Result.isGameOver result `shouldBe` False
+    before (runTestGame Game.playTurn $ newState Board.empty X [0, 1])
+      $ context "invalid cell number entered" $ do
+        it "does not finish the game" $ \(Right (result, _, _)) ->
+          Result.isGameOver result `shouldBe` False
 
-          it "displays the board and requests an action" $ \(Right (_, _, outputs)) -> do
-            outputs `shouldBe` [ DisplayBoard Board.empty
-                               , DisplayMessage "Crosses, choose cell:"
-                               , DisplayMessage "Attempting to set a cell which does not exist"
-                               , DisplayMessage "Try again"
-                               , DisplayBoard Board.empty
-                               , DisplayMessage "Crosses, choose cell:"
-                               ]
+        it "displays the board and requests an action" $ \(Right (_, _, outputs)) ->
+          outputs `shouldBe` [ DisplayBoard Board.empty
+                             , DisplayMessage "Crosses, choose cell:"
+                             , DisplayMessage "Attempting to set a cell which does not exist"
+                             , DisplayMessage "Try again"
+                             , DisplayBoard Board.empty
+                             , DisplayMessage "Crosses, choose cell:"
+                             ]
 
-          it "switches player" $ \(Right (_, st, _)) -> do
-            st^.state^.player `shouldBe` O
+        it "switches player" $ \(Right (_, st, _)) ->
+          st^.state^.player `shouldBe` O
 
-          it "sets the cell" $ \(Right (_, st, _)) -> do
-            st^.state^.board `shouldBe` Board.fromCells (toCells "X        ")
+        it "sets the cell" $ \(Right (_, st, _)) ->
+          st^.state^.board `shouldBe` Board.fromCells (toCells "X        ")
 
-      before (runTestGame Game.playTurn $ newState (Board.fromCells (toCells "XO XO    ")) X [7])
-        $ context "crosses win" $ do
-          it "does not finish the game" $ \(Right (result, _, _)) -> do
-            Result.isGameOver result `shouldBe` True
+    before (runTestGame Game.playTurn $ newState (Board.fromCells (toCells "XO XO    ")) X [7])
+      $ context "crosses win" $ do
+        it "does not finish the game" $ \(Right (result, _, _)) ->
+          Result.isGameOver result `shouldBe` True
 
-          it "displays the board and requests an action" $ \(Right (_, _, outputs)) -> do
-            outputs `shouldBe` [ DisplayBoard (Board.fromCells $ toCells "XO XO    ")
-                               , DisplayMessage "Crosses, choose cell:"
-                               ]
+        it "displays the board and requests an action" $ \(Right (_, _, outputs)) ->
+          outputs `shouldBe` [ DisplayBoard (Board.fromCells $ toCells "XO XO    ")
+                             , DisplayMessage "Crosses, choose cell:"
+                             ]
 
-          it "sets the cell" $ \(Right (_, st, _)) -> do
-            st^.state^.board `shouldBe` Board.fromCells (toCells "XO XO X  ")
+        it "sets the cell" $ \(Right (_, st, _)) ->
+          st^.state^.board `shouldBe` Board.fromCells (toCells "XO XO X  ")
 
-    describe "gameOverScreen" $ do
-      it "something" $ do
-        pending
+  describe "gameOverScreen" $
+    it "something" pending
