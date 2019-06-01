@@ -34,23 +34,25 @@ instance Monoid (Board a) where
   mempty = empty
 
 instance Eq a => Eq (Board a) where
-  b1 == b2 = cells b1 == cells b2
+  b1 == b2 = boardCells b1 == boardCells b2
 
 instance Show a => Show (Board a) where
-  show b = "fromCells " ++ show (cells b)
+  show b = "fromCells " ++ show (boardCells b)
 
 empty :: Board a
 empty = Board $ const Nothing
 
 singleCell :: Maybe a -> Coordinate -> Board a
-singleCell Nothing = const empty
-singleCell (Just c)  =
-  \setCoord -> Board $ \lookupCoord -> if setCoord == lookupCoord then Just c else Nothing
+singleCell Nothing     _     = empty
+singleCell (Just cell) coord = Board $ lookupFn cell coord
+
+lookupFn :: a -> Coordinate -> Coordinate -> Maybe a
+lookupFn cell coord lookupCoord
+  | coord == lookupCoord = Just cell
+  | otherwise            = Nothing
 
 fromCells :: [Maybe a] -> Board a
-fromCells get = mconcat fns
-  where
-    fns = zipWith singleCell get Coordinate.allCoordinates
+fromCells cells = mconcat $ zipWith singleCell cells Coordinate.allCoordinates
 
 setCell :: MonadError Error m => a -> Int -> Board a -> m (Board a)
 setCell cell position (Board get) =
@@ -61,10 +63,10 @@ setCell cell position (Board get) =
                    else throwError CellIsNotEmpty
 
 contains :: Eq a => Board a -> Maybe a -> Bool
-contains b c = c `elem` cells b
+contains b c = c `elem` boardCells b
 
-cells :: Board a -> [Maybe a]
-cells (Board get) = fmap get Coordinate.allCoordinates
+boardCells :: Board a -> [Maybe a]
+boardCells (Board get) = fmap get Coordinate.allCoordinates
 
 lines :: Board a -> [Line a]
 lines board = mconcat [rows board, columns board, diagonals board]
@@ -79,4 +81,4 @@ diagonals :: Board a -> [Line a]
 diagonals (Board get) = fmap (Line . fmap get) Coordinate.allDiagonals
 
 render :: ([Maybe a] -> b) -> Board a -> b
-render r = r . cells
+render r = r . boardCells
