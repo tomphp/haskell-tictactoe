@@ -2,15 +2,15 @@
 
 module TicTacToe.GameSpec where
 
-import Control.Lens         ((^.), (.=), makeLenses, use)
+import Control.Lens         (makeLenses, use, (.=), (^.))
 import Control.Monad.Except (ExceptT, MonadError, runExceptT)
 import Control.Monad.RWS    (RWST, runRWST)
-import Control.Monad.State  (MonadState(put, get))
+import Control.Monad.State  (MonadState(get, put))
 import Control.Monad.Writer (MonadWriter(tell))
 
 import Test.Hspec
 
-import           TicTacToe.Board  (Board) 
+import           TicTacToe.Board  (Board)
 import qualified TicTacToe.Board  as Board
 import qualified TicTacToe.Game   as Game
 import           TicTacToe.Player (Player(..))
@@ -69,7 +69,7 @@ toCells = map charToCell
         charToCell 'O' = Just O
         charToCell _   = Nothing
 
--- Tests 
+-- Tests
 
 spec :: Spec
 spec = describe "TicTacToe.Game" $ do

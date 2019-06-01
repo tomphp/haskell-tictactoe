@@ -3,9 +3,9 @@ module TicTacToe.BoardSpec where
 import Test.Hspec
 
 import           TicTacToe.Board  (Board, Error(..), contains)
+import qualified TicTacToe.Board  as Board
 import           TicTacToe.Line   (Line(..))
 import           TicTacToe.Player (Player(..))
-import qualified TicTacToe.Board  as Board
 
 render :: [Maybe Player] -> Text
 render = fromString . map (\case

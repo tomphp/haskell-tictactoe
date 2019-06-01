@@ -2,8 +2,8 @@ module TicTacToe.ResultSpec where
 
 import Test.Hspec
 
-import TicTacToe.Result (Result(..))
 import TicTacToe.Player (Player(..))
+import TicTacToe.Result (Result(..))
 
 spec :: Spec
 spec = do
@@ -37,7 +37,7 @@ spec = do
     --                       , Empty,  Naught, Naught
     --                       ]
     --     GameLogic.getGameState board `shouldBe` Winner Crosses
-         
+
 
     --   it "has been won be naughts if the there is a winning line of naughts" $ do
     --     let board = Board [ Naught, Cross,  Naught
