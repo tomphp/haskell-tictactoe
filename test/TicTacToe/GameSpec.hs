@@ -16,8 +16,7 @@ import qualified TicTacToe.Board  as Board
 import qualified TicTacToe.Game   as Game
 import           TicTacToe.Player (Player(..))
 import qualified TicTacToe.Result as Result
-import           TicTacToe.State  (State(..))
-import qualified TicTacToe.State  as State
+import           TicTacToe.State  (State(..), board, player)
 import           TicTacToe.UI     (UI(..))
 
 -- Mock
@@ -44,7 +43,7 @@ runTestGame app s = runExceptT $ runRWST (unApp app) [] s
 
 instance Monad m => UI (TestGame m) where
   displayMessage msg = tell [DisplayMessage msg]
-  displayBoard board = tell [DisplayBoard board]
+  displayBoard b = tell [DisplayBoard b]
   getPositionInput = do ins <- getInputs
                         let Just h = headZ ins
                         let Just t = tailZ ins
@@ -93,10 +92,10 @@ spec = do
                                ]
 
           it "switches player" $ \(Right (_, st, _)) -> do
-            st^.state^.State.player `shouldBe` O
+            st^.state^.player `shouldBe` O
 
           it "sets the cell" $ \(Right (_, st, _)) -> do
-            st^.state^.State.board `shouldBe` Board.fromCells (toCells "X        ")
+            st^.state^.board `shouldBe` Board.fromCells (toCells "X        ")
 
       before (runTestGame Game.playTurn $ newState (Board.fromCells (toCells "X        ")) O [1, 2])
         $ context "cross take" $ do
@@ -113,10 +112,10 @@ spec = do
                                ]
 
           it "switches player" $ \(Right (_, st, _)) -> do
-            st^.state^.State.player `shouldBe` X
+            st^.state^.player `shouldBe` X
 
           it "sets the cell" $ \(Right (_, st, _)) -> do
-            st^.state^.State.board `shouldBe` Board.fromCells (toCells "XO       ")
+            st^.state^.board `shouldBe` Board.fromCells (toCells "XO       ")
 
       before (runTestGame Game.playTurn $ newState Board.empty X [0, 1])
         $ context "invalid cell number entered" $ do
@@ -133,10 +132,10 @@ spec = do
                                ]
 
           it "switches player" $ \(Right (_, st, _)) -> do
-            st^.state^.State.player `shouldBe` O
+            st^.state^.player `shouldBe` O
 
           it "sets the cell" $ \(Right (_, st, _)) -> do
-            st^.state^.State.board `shouldBe` Board.fromCells (toCells "X        ")
+            st^.state^.board `shouldBe` Board.fromCells (toCells "X        ")
 
       before (runTestGame Game.playTurn $ newState (Board.fromCells (toCells "XO XO    ")) X [7])
         $ context "crosses win" $ do
@@ -149,7 +148,7 @@ spec = do
                                ]
 
           it "sets the cell" $ \(Right (_, st, _)) -> do
-            st^.state^.State.board `shouldBe` Board.fromCells (toCells "XO XO X  ")
+            st^.state^.board `shouldBe` Board.fromCells (toCells "XO XO X  ")
 
     describe "gameOverScreen" $ do
       it "something" $ do
