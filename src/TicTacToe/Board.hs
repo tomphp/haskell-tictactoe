@@ -18,14 +18,15 @@ import           TicTacToe.Coordinate (Coordinate)
 import qualified TicTacToe.Coordinate as Coordinate
 import           TicTacToe.Line       (Line(..))
 
-data Error = CellDoesNotExist | CellIsNotEmpty deriving (Eq, Show)
+data Error = CellDoesNotExist
+           | CellIsNotEmpty
+           deriving (Eq, Show)
 
 newtype Board a = Board { getCell :: Coordinate -> Maybe a }
 
 instance Semigroup (Board a) where
   Board b1 <> Board b2 = Board $ combine b1 b2
-    where combine :: (Coordinate -> Maybe a) -> (Coordinate -> Maybe a) -> Coordinate -> Maybe a
-          combine c1 c2 coord
+    where combine c1 c2 coord
             | isJust (c1 coord) = c1 coord
             | otherwise         = c2 coord
 
@@ -42,9 +43,9 @@ empty :: Board a
 empty = Board $ const Nothing
 
 singleCell :: Maybe a -> Coordinate -> Board a
-singleCell Nothing _      = empty
-singleCell c       coord1 =
-  Board $ \coord2 -> if coord1 == coord2 then c else Nothing
+singleCell Nothing = const empty
+singleCell (Just c)  =
+  \setCoord -> Board $ \lookupCoord -> if setCoord == lookupCoord then Just c else Nothing
 
 fromCells :: [Maybe a] -> Board a
 fromCells get = mconcat fns

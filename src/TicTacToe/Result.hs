@@ -4,7 +4,10 @@ import           TicTacToe.Board (Board, contains)
 import qualified TicTacToe.Board as Board
 import qualified TicTacToe.Line  as Line
 
-data Result p = InPlay | Draw | Winner p deriving (Eq)
+data Result p = InPlay
+              | Draw
+              | Winner p
+              deriving (Eq)
 
 instance Show a => Show (Result a) where
   show InPlay     = "TerminalGame is in play"

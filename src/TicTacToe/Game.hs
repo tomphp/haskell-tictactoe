@@ -22,7 +22,7 @@ import qualified TicTacToe.State  as State
 import           TicTacToe.UI     (UI)
 import qualified TicTacToe.UI     as UI
 
-data Error = BoardError Board.Error deriving Show
+newtype Error = BoardError Board.Error deriving Show
 
 game :: (MonadError Error m, MonadState State m, UI m) => m ()
 game = iterateUntil Result.isGameOver playTurn >>= gameOverScreen
@@ -45,10 +45,10 @@ result :: MonadState State m => m (Result Player)
 result = Result.fromBoard <$> use State.board
 
 badPositionHandler :: (MonadError Error m, MonadState State m, UI m) => Error -> m ()
-badPositionHandler (BoardError e) =
-  do UI.displayMessage $ errorMsg e
-     UI.displayMessage "Try again"
-     void placeToken
+badPositionHandler (BoardError e) = do
+  UI.displayMessage $ errorMsg e
+  UI.displayMessage "Try again"
+  void placeToken
 
 turnScreen :: (MonadState State m, UI m) => m ()
 turnScreen = do
