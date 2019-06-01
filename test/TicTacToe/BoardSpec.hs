@@ -55,34 +55,6 @@ spec = do
                                          , Line [ Just X,  Just O,  Just X  ]
                                          , Line [ Nothing, Just O,  Nothing ]
                                          ]
-        describe "row" $ do
-          it "returns the row" $ do
-            Board.row 1 board `shouldBe` Just (Line [ Just X,   Just O,  Nothing ])
-            Board.row 2 board `shouldBe` Just (Line [ Just O,   Just O,  Just X  ])
-            Board.row 3 board `shouldBe` Just (Line [ Nothing,  Nothing, Just X  ])
-
-          it "returns Nothing for a bad row number" $ do
-            Board.row 0 board `shouldBe` Nothing
-            Board.row 4 board `shouldBe` Nothing
-
-        describe "column" $ do
-          it "returns the column" $ do
-            Board.column 1 board `shouldBe` Just (Line [ Just X,  Just O, Nothing ])
-            Board.column 2 board `shouldBe` Just (Line [ Just O,  Just O, Nothing ])
-            Board.column 3 board `shouldBe` Just (Line [ Nothing, Just X, Just X  ])
-
-          it "returns Nothing for a bad column number" $ do
-            Board.column 0 board `shouldBe` Nothing
-            Board.column 4 board `shouldBe` Nothing
-
-        describe "diagonal" $ do
-          it "returns the diagonal" $ do
-            Board.diagonal 1 board `shouldBe` Just (Line [ Just X,  Just O, Just X ])
-            Board.diagonal 2 board `shouldBe` Just (Line [ Nothing, Just O, Nothing ])
-
-          it "returns Nothing for a bad diagonal number" $ do
-            Board.diagonal 0 board `shouldBe` Nothing
-            Board.diagonal 3 board `shouldBe` Nothing
 
       describe "render" $ do
         it "converts a board to text" $ do

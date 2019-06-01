@@ -92,3 +92,4 @@ tests:
     dependencies:
     - haskell-tictactoe
     - hspec
+    - QuickCheck

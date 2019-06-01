@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a98bb39b6f2e38c305e88ded56c6c1c39bebcf300c14c65486b92b1e7e2622fd
+-- hash: 861c9f965b567cc1a3cbfbb82403604c93d28eb22d4bead836829fd02e0a3fa5
 
 name:           haskell-tictactoe
 version:        0.1.0.0
@@ -27,6 +27,7 @@ library
       Prelude
       TicTacToe
       TicTacToe.Board
+      TicTacToe.Coordinate
       TicTacToe.Game
       TicTacToe.Line
       TicTacToe.Player
@@ -77,6 +78,7 @@ test-suite haskell-tictactoe-test
   other-modules:
       PreludeSpec
       TicTacToe.BoardSpec
+      TicTacToe.CoordinateSpec
       TicTacToe.GameSpec
       TicTacToe.LineSpec
       TicTacToe.PlayerSpec
@@ -88,7 +90,8 @@ test-suite haskell-tictactoe-test
   default-extensions: DeriveFunctor FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses OverloadedStrings ScopedTypeVariables TypeApplications
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base-noprelude >=4.7 && <5
+      QuickCheck
+    , base-noprelude >=4.7 && <5
     , classy-prelude
     , errors
     , fmt
