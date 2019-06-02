@@ -34,7 +34,8 @@ data TestState = TestState { _state :: State, _inputs :: Inputs }
 
 makeLenses ''TestState
 
-newtype TestGame m a = TestGame { unApp :: RWST Inputs Outputs TestState (ExceptT Game.Error m) a }
+newtype TestGame m a =
+  TestGame { unApp :: RWST Inputs Outputs TestState (ExceptT Game.Error m) a }
   deriving ( Functor
            , Applicative
            , Monad
@@ -42,7 +43,10 @@ newtype TestGame m a = TestGame { unApp :: RWST Inputs Outputs TestState (Except
            , MonadWriter Outputs
            )
 
-runTestGame :: Monad m => TestGame m a -> TestState -> m (Either Game.Error (a, TestState, Outputs))
+runTestGame :: Monad m
+            => TestGame m a
+            -> TestState
+            -> m (Either Game.Error (a, TestState, Outputs))
 runTestGame app s = runExceptT $ runRWST (unApp app) [] s
 
 instance Monad m => UI (TestGame m) where
