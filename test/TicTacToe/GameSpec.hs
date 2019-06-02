@@ -1,7 +1,7 @@
 module TicTacToe.GameSpec where
 
-import Control.Lens         ((^.))
-import Control.Lens.Tuple   (_3)
+import Control.Lens       ((^.))
+import Control.Lens.Tuple (_3)
 
 import Test.Hspec
 
@@ -25,6 +25,11 @@ import           TicTacToe.State    (board, player)
 boardFromString :: String -> Board Player
 boardFromString = Fixtures.boardFromString
 
+runGame :: Monad m => Inputs -> m (Either Game.Error Outputs)
+runGame inputs = fmap (^._3) <$> returnValue
+  where returnValue = runTestGame Game.game emptyState
+        emptyState = newState Board.empty X inputs
+
 runPlayTurn :: Monad m
             => String
             -> Player
@@ -40,7 +45,26 @@ runGameOverScreen result = fmap (^._3) <$> returnValue
 spec :: Spec
 spec = describe "TicTacToe.Game" $ do
   describe "game" $
-    it "something" pending
+    before (runGame [1, 2, 3, 4, 5, 6, 7])
+      $ context "for a complete game" $
+        it "displays the game" $ \(Right outputs) -> 
+          outputs `shouldBe` [ DisplayBoard Board.empty
+                             , DisplayMessage "Crosses, choose cell:"
+                             , DisplayBoard $ boardFromString "X        "
+                             , DisplayMessage "Naughts, choose cell:"
+                             , DisplayBoard $ boardFromString "XO       "
+                             , DisplayMessage "Crosses, choose cell:"
+                             , DisplayBoard $ boardFromString "XOX      "
+                             , DisplayMessage "Naughts, choose cell:"
+                             , DisplayBoard $ boardFromString "XOXO     "
+                             , DisplayMessage "Crosses, choose cell:"
+                             , DisplayBoard $ boardFromString "XOXOX    "
+                             , DisplayMessage "Naughts, choose cell:"
+                             , DisplayBoard $ boardFromString "XOXOXO   "
+                             , DisplayMessage "Crosses, choose cell:"
+                             , DisplayBoard $ boardFromString "XOXOXOX  "
+                             , DisplayMessage "Game over: Crosses win"
+                             ]
 
   describe "playTurn" $ do
     before (runPlayTurn "         " X [1])
