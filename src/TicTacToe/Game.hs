@@ -75,13 +75,12 @@ errorMsg Board.CellIsNotEmpty   =  "Attempting to set a cell which is not empty"
 
 -- Game Over
 
-gameOverScreen :: (MonadState State m, UI m) => Result Player -> m ()
+gameOverScreen :: (UI m) => Result Player -> m ()
 gameOverScreen r = do
-  b <- use State.board
-  UI.displayBoard b
+  UI.displayBoard (Result.board r)
   UI.displayMessage $ "Game over: "+|resultMsg r|+""
 
 resultMsg :: Result Player -> Text
-resultMsg InPlay     = "TerminalGame is in play"
-resultMsg Draw       = "Draw"
-resultMsg (Winner p) = tshow p <> " win"
+resultMsg (InPlay _)   = "TerminalGame is in play"
+resultMsg (Draw _)     = "Draw"
+resultMsg (Winner _ p) = tshow p <> " win"

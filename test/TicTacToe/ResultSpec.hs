@@ -2,19 +2,59 @@ module TicTacToe.ResultSpec where
 
 import Test.Hspec
 
-import TicTacToe.Player (Player(..))
-import TicTacToe.Result (Result(..))
+import qualified TicTacToe.Fixtures as Fixtures
+import qualified TicTacToe.Result   as Result
 
 spec :: Spec
-spec = do
+spec =
   describe "TicTacToe.Result" $ do
-    describe "Result" $ do
-      describe "show" $ do
-        it "returns a string" $ do
-          show @(Result Player) InPlay     `shouldBe` "TerminalGame is in play"
-          show @(Result Player) Draw       `shouldBe` "Draw"
-          show                  (Winner X) `shouldBe` "Crosses win"
-          show                  (Winner O) `shouldBe` "Naughts win"
+    context "for in play board" $ do
+      let board = Fixtures.inPlayBoard
+      let result = Result.fromBoard board
+
+      describe "show" $
+        it "returns a string" $
+          show result `shouldBe` "TerminalGame is in play"
+
+      describe "getBoard" $
+        it "returns the board" $
+          Result.board result `shouldBe` board
+
+    context "for cross won board" $ do
+      let board = Fixtures.xWonBoard
+      let result = Result.fromBoard board
+
+      describe "show" $
+        it "returns a string" $
+          show result `shouldBe` "Crosses win"
+
+      describe "getBoard" $
+        it "returns the board" $
+          Result.board result `shouldBe` board
+
+    context "for naught won board" $ do
+      let board = Fixtures.oWonBoard
+      let result = Result.fromBoard board
+
+      describe "show" $
+        it "returns a string" $
+          show result `shouldBe` "Naughts win"
+
+      describe "getBoard" $
+        it "returns the board" $
+          Result.board result `shouldBe` board
+
+    context "for drawn oard" $ do
+      let board = Fixtures.drawnBoard
+      let result = Result.fromBoard board
+
+      describe "show" $
+        it "returns a string" $
+          show result `shouldBe` "Draw"
+
+      describe "getBoard" $
+        it "returns the board" $
+          Result.board result `shouldBe` board
 
     -- context "fromBoard" $ do
     --   it "is in play if there are empty cells and no winning lines" $ do
