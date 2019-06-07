@@ -36,6 +36,8 @@ instance MonadIO m => MonadState State (TerminalGame m) where
   get = ask >>= readIORef
   put s = ask >>= \ref -> writeIORef ref s
 
+-- UI
+
 instance MonadIO m => UI (TerminalGame m) where
   displayMessage = putStrLn
 
