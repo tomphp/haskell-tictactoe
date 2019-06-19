@@ -16,11 +16,12 @@ import Control.Monad.RWS    (RWST, runRWST)
 import Control.Monad.State  (MonadState(get, put))
 import Control.Monad.Writer (MonadWriter(tell))
 
-import           TicTacToe.Board    (Board)
-import qualified TicTacToe.Game     as Game
-import           TicTacToe.Player   (Player(..))
-import           TicTacToe.State    (State(..))
-import           TicTacToe.UI       (UI(..))
+import           TicTacToe.Board      (Board)
+import qualified TicTacToe.Coordinate as Coordinate
+import qualified TicTacToe.Game       as Game
+import           TicTacToe.Player     (Player(..))
+import           TicTacToe.State      (State(..))
+import           TicTacToe.UI         (UI(..))
 
 type Inputs = [Int]
 
@@ -55,7 +56,8 @@ instance Monad m => UI (TestGame m) where
   getPositionInput = do ins <- getInputs
                         let (h:t) = ins
                         putInputs t
-                        return h
+                        let (Just coord) = Coordinate.fromIndex h
+                        return coord
 
 putInputs :: Monad m => Inputs -> TestGame m ()
 putInputs ins = TestGame $ inputs .= ins

@@ -7,12 +7,13 @@ import Control.Monad.Reader       (MonadReader, ReaderT, ask, runReaderT)
 import Control.Monad.State.Strict (MonadState, get, put)
 import Data.List.Split            (chunksOf)
 
-import qualified TicTacToe.Board  as Board
-import qualified TicTacToe.Game   as Game
-import           TicTacToe.Player (Player(..))
-import           TicTacToe.State  (State)
-import qualified TicTacToe.State  as State
-import           TicTacToe.UI     (UI(..))
+import qualified TicTacToe.Board      as Board
+import qualified TicTacToe.Coordinate as Coordinate
+import qualified TicTacToe.Game       as Game
+import           TicTacToe.Player     (Player(..))
+import           TicTacToe.State      (State)
+import qualified TicTacToe.State      as State
+import           TicTacToe.UI         (UI(..))
 
 type Env = IORef State
 
@@ -45,9 +46,18 @@ instance MonadIO m => UI (TerminalGame m) where
 
   getPositionInput =
     untilJust $ do
-      pos <- readZ . unpack <$> getLine
-      when (isNothing pos) $ displayMessage "Try again..."
-      return pos
+      idx <- getNumberInput
+      let coordinate = Coordinate.fromIndex idx
+      when (isNothing coordinate) $
+        displayMessage "Attempting to set a cell which does not exist"
+      return coordinate
+
+getNumberInput :: (MonadIO m, UI m) => m Int
+getNumberInput =
+  untilJust $ do
+    pos <- readZ . unpack <$> getLine
+    when (isNothing pos) $ displayMessage "Try again..."
+    return pos
 
 boardRenderer :: [Maybe Player] -> Text
 boardRenderer cs = rendered

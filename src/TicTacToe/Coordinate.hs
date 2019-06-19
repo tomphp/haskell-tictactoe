@@ -58,4 +58,3 @@ allDiagonals =
     [ uncurry Coordinate <$> [(1, 1), (2, 2), (3, 3)] -- too specific
     , uncurry Coordinate <$> [(1, 3), (2, 2), (3, 1)] -- too specific
     ]
-

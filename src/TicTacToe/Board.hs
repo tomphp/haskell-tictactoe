@@ -18,9 +18,7 @@ import           TicTacToe.Coordinate (Coordinate)
 import qualified TicTacToe.Coordinate as Coordinate
 import           TicTacToe.Line       (Line(..))
 
-data Error = CellDoesNotExist
-           | CellIsNotEmpty
-           deriving (Eq, Show)
+data Error = CellIsNotEmpty deriving (Eq, Show)
 
 newtype Board a = Board { getCell :: Coordinate -> Maybe a }
 
@@ -54,14 +52,8 @@ lookupFn cell coord lookupCoord
 fromCells :: [Maybe a] -> Board a
 fromCells cells = mconcat $ zipWith singleCell cells Coordinate.allCoordinates
 
-setCell :: MonadError Error m => a -> Int -> Board a -> m (Board a)
-setCell cell position b =
-  case Coordinate.fromIndex position of
-    Nothing    -> throwError CellDoesNotExist
-    Just coord -> setCell' cell coord b
-
-setCell' :: MonadError Error m => a -> Coordinate -> Board a -> m (Board a)
-setCell' cell coord (Board get) =
+setCell :: MonadError Error m => a -> Coordinate -> Board a -> m (Board a)
+setCell cell coord (Board get) =
   if isNothing (get coord)
     then return $ singleCell (Just cell) coord <> Board get
     else throwError CellIsNotEmpty

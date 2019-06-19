@@ -103,26 +103,6 @@ spec = describe "TicTacToe.Game" $ do
         it "sets the cell" $ \(Right (_, st, _)) ->
           st^.state^.board `shouldBe` boardFromString "XO       "
 
-    before (runPlayTurn "         " X [0, 1])
-      $ context "invalid cell number entered" $ do
-        it "does not finish the game" $ \(Right (result, _, _)) ->
-          Result.isGameOver result `shouldBe` False
-
-        it "displays the board and requests an action" $ \(Right (_, _, outputs)) ->
-          outputs `shouldBe` [ DisplayBoard Board.empty
-                             , DisplayMessage "Crosses, choose cell:"
-                             , DisplayMessage "Attempting to set a cell which does not exist"
-                             , DisplayMessage "Try again"
-                             , DisplayBoard Board.empty
-                             , DisplayMessage "Crosses, choose cell:"
-                             ]
-
-        it "switches player" $ \(Right (_, st, _)) ->
-          st^.state^.player `shouldBe` O
-
-        it "sets the cell" $ \(Right (_, st, _)) ->
-          st^.state^.board `shouldBe` boardFromString "X        "
-
     before (runPlayTurn "XO XO    " X [7])
       $ context "crosses win" $ do
         it "does not finish the game" $ \(Right (result, _, _)) ->

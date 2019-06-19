@@ -2,10 +2,11 @@ module TicTacToe.BoardSpec where
 
 import Test.Hspec
 
-import           TicTacToe.Board  (Board, Error(..), contains)
-import qualified TicTacToe.Board  as Board
-import           TicTacToe.Line   (Line(..))
-import           TicTacToe.Player (Player(..))
+import           TicTacToe.Board       (Board, Error(..), contains)
+import qualified TicTacToe.Board       as Board
+import qualified TicTacToe.Coordinate  as Coordinate
+import           TicTacToe.Line        (Line(..))
+import           TicTacToe.Player      (Player(..))
 
 render :: [Maybe Player] -> Text
 render = fromString . map (\case
@@ -25,18 +26,15 @@ spec = do
           boardStr Board.empty `shouldBe` replicate 9 'E'
 
       describe "setCell" $ do
-        let cellNum = 5
+        let (Just coord) = Coordinate.new 2 2
 
-        let (Right board) = Board.setCell X cellNum Board.empty
+        let (Right board) = Board.setCell X coord Board.empty
 
         it "sets a cell on the board" $ do
           boardStr board `shouldBe` "EEEEXEEEE"
 
-        it "returns CellDoesNotExist when trying to set an invalid cell" $ do
-          Board.setCell X 0 board `shouldBe` Left CellDoesNotExist
-
         it "returns CellIsNotEmpty when trying to set an invalid cell" $ do
-          Board.setCell X cellNum board `shouldBe` Left CellIsNotEmpty
+          Board.setCell X coord board `shouldBe` Left CellIsNotEmpty
 
       context "for board in play" $ do
         let board = Board.fromCells [ Just X,  Just O,  Nothing

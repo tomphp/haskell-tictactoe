@@ -12,15 +12,16 @@ import Control.Monad.State  (MonadState)
 
 import Fmt
 
-import qualified TicTacToe.Board  as Board
-import           TicTacToe.Player (Player(..))
-import qualified TicTacToe.Player as Player
-import           TicTacToe.Result (Result(..))
-import qualified TicTacToe.Result as Result
-import           TicTacToe.State  (State)
-import qualified TicTacToe.State  as State
-import           TicTacToe.UI     (UI)
-import qualified TicTacToe.UI     as UI
+import qualified TicTacToe.Board       as Board
+import           TicTacToe.Coordinate (Coordinate)
+import           TicTacToe.Player     (Player(..))
+import qualified TicTacToe.Player     as Player
+import           TicTacToe.Result     (Result(..))
+import qualified TicTacToe.Result     as Result
+import           TicTacToe.State      (State)
+import qualified TicTacToe.State      as State
+import           TicTacToe.UI         (UI)
+import qualified TicTacToe.UI         as UI
 
 newtype Error = BoardError Board.Error deriving Show
 
@@ -38,8 +39,8 @@ playTurn = do
 placeToken :: (MonadError Error m, MonadState State m, UI m) => m ()
 placeToken = do
   turnScreen
-  p <- UI.getPositionInput
-  setCell p `catchError` badPositionHandler
+  c <- UI.getPositionInput
+  setCell c `catchError` badPositionHandler
 
 result :: MonadState State m => m (Result Player)
 result = Result.fromBoard <$> use State.board
@@ -60,17 +61,16 @@ turnScreen = do
 switchPlayer :: MonadState State m => m ()
 switchPlayer = State.player %= Player.switch
 
-setCell :: (MonadError Error m, MonadState State m) => Int -> m ()
-setCell position = do
+setCell :: (MonadError Error m, MonadState State m) => Coordinate -> m ()
+setCell coordinate = do
   p <- use State.player
   b <- use State.board
 
-  case Board.setCell p position b of
+  case Board.setCell p coordinate b of
     Right b' -> State.board .= b'
     Left e   -> throwError $ BoardError e
 
 errorMsg :: Board.Error -> Text
-errorMsg Board.CellDoesNotExist =  "Attempting to set a cell which does not exist"
 errorMsg Board.CellIsNotEmpty   =  "Attempting to set a cell which is not empty"
 
 -- Game Over
