@@ -1,5 +1,7 @@
 module TicTacToe (run) where
 
+import AppPrelude
+
 import qualified TicTacToe.Game         as Game
 import qualified TicTacToe.TerminalGame as TerminalGame
 

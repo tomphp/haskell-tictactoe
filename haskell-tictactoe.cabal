@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.1.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 43e09017b4ece86fc7ce707d71e1f48492614ed7405e1f2162ee3929ca490cb0
+-- hash: fec509b1d2c1eb4cb788842ff438ede565e487bca4405d4a75af3308b78ced69
 
 name:           haskell-tictactoe
 version:        0.1.0.0
@@ -24,7 +24,7 @@ source-repository head
 
 library
   exposed-modules:
-      Prelude
+      AppPrelude
       TicTacToe
       TicTacToe.Board
       TicTacToe.Coordinate
@@ -39,9 +39,19 @@ library
       Paths_haskell_tictactoe
   hs-source-dirs:
       src
-  default-extensions: DeriveFunctor FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses OverloadedStrings ScopedTypeVariables TypeApplications
+  default-extensions:
+      DeriveFunctor
+      FlexibleContexts
+      FlexibleInstances
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      MultiParamTypeClasses
+      NoImplicitPrelude
+      OverloadedStrings
+      ScopedTypeVariables
+      TypeApplications
   build-depends:
-      base-noprelude >=4.7 && <5
+      base >=4.7 && <5
     , classy-prelude
     , errors
     , fmt
@@ -57,10 +67,20 @@ executable haskell-tictactoe-exe
       Paths_haskell_tictactoe
   hs-source-dirs:
       app
-  default-extensions: DeriveFunctor FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses OverloadedStrings ScopedTypeVariables TypeApplications
+  default-extensions:
+      DeriveFunctor
+      FlexibleContexts
+      FlexibleInstances
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      MultiParamTypeClasses
+      NoImplicitPrelude
+      OverloadedStrings
+      ScopedTypeVariables
+      TypeApplications
   ghc-options: -rtsopts -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
   build-depends:
-      base-noprelude >=4.7 && <5
+      base >=4.7 && <5
     , classy-prelude
     , errors
     , fmt
@@ -76,7 +96,7 @@ test-suite haskell-tictactoe-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      PreludeSpec
+      AppPreludeSpec
       TicTacToe.BoardSpec
       TicTacToe.CoordinateSpec
       TicTacToe.Fixtures
@@ -89,11 +109,21 @@ test-suite haskell-tictactoe-test
       Paths_haskell_tictactoe
   hs-source-dirs:
       test
-  default-extensions: DeriveFunctor FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses OverloadedStrings ScopedTypeVariables TypeApplications
+  default-extensions:
+      DeriveFunctor
+      FlexibleContexts
+      FlexibleInstances
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      MultiParamTypeClasses
+      NoImplicitPrelude
+      OverloadedStrings
+      ScopedTypeVariables
+      TypeApplications
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       QuickCheck
-    , base-noprelude >=4.7 && <5
+    , base >=4.7 && <5
     , classy-prelude
     , errors
     , fmt

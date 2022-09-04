@@ -2,6 +2,8 @@
 
 module TicTacToe.Player where
 
+import AppPrelude
+
 data Player = X
             | O
             deriving (Bounded, CycleEnum, Enum, Eq)

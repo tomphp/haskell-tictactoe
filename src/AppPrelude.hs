@@ -1,4 +1,4 @@
-module Prelude
+module AppPrelude
   ( module ClassyPrelude
   , CycleEnum(..)
   ) where

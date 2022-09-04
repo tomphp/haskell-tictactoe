@@ -1,5 +1,7 @@
 module TicTacToe.ResultSpec where
 
+import AppPrelude
+
 import Test.Hspec
 
 import qualified TicTacToe.Fixtures as Fixtures

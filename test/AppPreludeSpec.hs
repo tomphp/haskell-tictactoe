@@ -1,6 +1,8 @@
 {-# LANGUAGE DeriveAnyClass #-}
 
-module PreludeSpec where
+module AppPreludeSpec where
+
+import AppPrelude
 
 import Test.Hspec
 

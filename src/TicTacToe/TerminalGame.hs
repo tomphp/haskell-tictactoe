@@ -1,5 +1,7 @@
 module TicTacToe.TerminalGame (run) where
 
+import AppPrelude
+
 import Control.Error.Safe         (readZ)
 import Control.Monad.Except       (ExceptT, MonadError, runExceptT)
 import Control.Monad.Loops        (untilJust)

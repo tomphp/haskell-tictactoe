@@ -1,5 +1,7 @@
 module TicTacToe.BoardSpec where
 
+import AppPrelude
+
 import Test.Hspec
 
 import           TicTacToe.Board       (Board, Error(..), contains)

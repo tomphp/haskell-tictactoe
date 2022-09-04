@@ -1,5 +1,7 @@
 module TicTacToe.CoordinateSpec where
 
+import AppPrelude
+
 import Test.Hspec
 import Test.QuickCheck
 

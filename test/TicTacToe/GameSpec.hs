@@ -1,5 +1,7 @@
 module TicTacToe.GameSpec where
 
+import AppPrelude
+
 import Control.Lens       ((^.))
 import Control.Lens.Tuple (_3)
 

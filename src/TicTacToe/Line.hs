@@ -3,6 +3,8 @@ module TicTacToe.Line
   , winner
   ) where
 
+import AppPrelude
+
 import Data.List (nub)
 
 newtype Line a = Line [Maybe a] deriving (Eq, Show)

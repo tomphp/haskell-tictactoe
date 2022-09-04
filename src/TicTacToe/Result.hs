@@ -5,6 +5,8 @@ module TicTacToe.Result
   , isGameOver
   ) where
 
+import AppPrelude
+
 import           TicTacToe.Board (Board, contains)
 import qualified TicTacToe.Board as Board
 import qualified TicTacToe.Line  as Line

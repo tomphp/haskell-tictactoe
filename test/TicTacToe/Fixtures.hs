@@ -1,5 +1,7 @@
 module TicTacToe.Fixtures where
 
+import AppPrelude
+
 import           TicTacToe.Board  (Board)
 import qualified TicTacToe.Board  as Board
 import           TicTacToe.Player (Player(..))

@@ -10,6 +10,8 @@ module TicTacToe.TestGame
   , state
   ) where
 
+import AppPrelude
+
 import Control.Lens         (makeLenses, use, (.=))
 import Control.Monad.Except (ExceptT, MonadError, runExceptT)
 import Control.Monad.RWS    (RWST, runRWST)

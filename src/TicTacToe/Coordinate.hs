@@ -11,6 +11,8 @@ module TicTacToe.Coordinate
   , toTuple
   ) where
 
+import AppPrelude
+
 import Control.Monad.Except (MonadError, throwError)
 
 data Coordinate = Coordinate Int Int deriving (Eq, Show)

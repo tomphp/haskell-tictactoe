@@ -1,5 +1,7 @@
 module TicTacToe.LineSpec where
 
+import AppPrelude
+
 import Test.Hspec
 
 import TicTacToe.Line (Line(..))

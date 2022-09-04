@@ -10,7 +10,7 @@ module TicTacToe.Board
   , setCell
   ) where
 
-import Prelude hiding (empty, lines)
+import AppPrelude hiding (empty, lines)
 
 import Control.Monad.Except (MonadError, throwError)
 

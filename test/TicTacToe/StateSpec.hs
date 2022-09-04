@@ -1,5 +1,7 @@
 module TicTacToe.StateSpec where
 
+import AppPrelude
+
 import Test.Hspec
 
 import Control.Lens ((^.))

@@ -1,5 +1,7 @@
 module TicTacToe.PlayerSpec where
 
+import AppPrelude
+
 import Test.Hspec
 
 import           TicTacToe.Player (Player(..))

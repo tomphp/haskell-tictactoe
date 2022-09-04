@@ -1,5 +1,7 @@
 module TicTacToe.UI where
 
+import AppPrelude
+
 import TicTacToe.Board      (Board)
 import TicTacToe.Coordinate (Coordinate)
 import TicTacToe.Player     (Player)

@@ -16,7 +16,7 @@ copyright:           "2019 Author name here"
 description:         A playground for messing about with Haskell
 
 dependencies:
-- base-noprelude >= 4.7 && < 5
+- base >=4.7 && <5
 - classy-prelude
 - errors
 - fmt
@@ -50,6 +50,7 @@ default-extensions:
 - MultiParamTypeClasses
 # - MultiWayIf
 # - NamedFieldPuns
+- NoImplicitPrelude
 - OverloadedStrings
 # - PatternSynonyms
 # - RankNTypes
